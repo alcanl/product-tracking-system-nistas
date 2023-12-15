@@ -1,7 +1,7 @@
 package com.alcanl.app.repository.entity;
 
 import com.alcanl.app.repository.entity.types.helper.HelperType;
-import com.alcanl.app.repository.entity.material.Material;
+import com.alcanl.app.repository.material.Material;
 
 import java.math.BigDecimal;
 
@@ -11,7 +11,7 @@ public class HelperMaterial extends Material {
 
     protected HelperMaterial(String name, BigDecimal unitPrice, int radius, HelperType helperType)
     {
-        super(name, unitPrice);
+        super(unitPrice, "");
         m_radius = radius;
         m_helperType = helperType;
     }
