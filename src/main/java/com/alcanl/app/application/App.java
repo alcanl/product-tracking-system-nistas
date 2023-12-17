@@ -1,7 +1,7 @@
 package com.alcanl.app.application;
 
 class App {
-    public static void main(String[] args)
+    public static void maint(String[] args)
     {
         Application.run(args);
     }

@@ -18,6 +18,7 @@
     <description>Product Tracking Application</description>
 
     <repositories>
+
         <repository>
             <id>javaapp1-mar-2023-maven-repo</id>
             <url>https://raw.github.com/oguzkaran/javaapp1-mar-2023-maven-repo/main</url>
@@ -41,6 +42,13 @@
             <artifactId>com-karandev-util-console</artifactId>
             <version>14.0.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.44.1.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
