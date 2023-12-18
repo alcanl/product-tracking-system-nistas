@@ -30,6 +30,7 @@ public class ApplicationService {
     }
     public List<Material> searchByLength(String length)
     {
-        return materials.stream().filter(m -> m.getLength().equals(length)).toList();
+        return materials.stream().filter(m -> m.getLength().isPresent())
+                .filter(m -> m.getLength().get().equals(length)).toList();
     }
 }
