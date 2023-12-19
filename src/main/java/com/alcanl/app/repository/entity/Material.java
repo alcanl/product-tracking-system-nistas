@@ -2,6 +2,7 @@ package com.alcanl.app.repository.entity;
 
 import static com.alcanl.app.global.Resources.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
@@ -80,5 +81,17 @@ public class Material {
         return String.format("Ürün adı : %s\nÜrün çapı : %s\nÜrün Uzunluk: %s\nÜrün Birim Fiyat: %s\n",
                 m_name, m_radius < DOUBLE_THRESHOLD ? "Çap Bilgisi Yok" : String.format("%.02f", m_radius),
                 m_length == null ? "Uzunluk Bilgisi Yok" : m_length, m_unitPrice);
+    }
+    @Override
+    public boolean equals(Object other)
+    {
+        return other instanceof Material material && m_name.equalsIgnoreCase(material.m_name)
+                && m_length.equalsIgnoreCase(material.m_length)
+                && m_radius - material.m_radius < DOUBLE_THRESHOLD;
+    }
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(this.m_name);
     }
 }
