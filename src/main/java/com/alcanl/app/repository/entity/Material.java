@@ -7,14 +7,18 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 
 public class Material {
-    private final int m_id;
+    private int m_id;
     private String m_name;
     private Double m_radius;
     private String m_length;
     private BigDecimal m_unitPrice;
     public Material(int id, String name, Double radius, String length, double unitPrice)
     {
+        this(name, radius, length, unitPrice);
         m_id = id;
+    }
+    public Material(String name, Double radius, String length, double unitPrice)
+    {
         setName(name);
         setRadius(radius);
         setLength(length);

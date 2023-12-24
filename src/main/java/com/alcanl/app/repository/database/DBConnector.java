@@ -91,8 +91,22 @@ public final class DBConnector {
     public static boolean deleteData(int id) {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
 
-            var statement = connection.prepareStatement(DELETE_DATA);
+            var statement = connection.prepareStatement(DELETE_DATA_BY_ID);
             statement.setInt(1, id);
+            statement.executeUpdate();
+
+            return true;
+
+        } catch (SQLException ex) {
+            throw new RepositoryException(ex.getCause());
+        }
+    }
+    public static boolean deleteData(String name)
+    {
+        try (Connection connection = DriverManager.getConnection(DB_URL)) {
+
+            var statement = connection.prepareStatement(DELETE_DATA_BY_NAME);
+            statement.setString(1, name);
             statement.executeUpdate();
 
             return true;
