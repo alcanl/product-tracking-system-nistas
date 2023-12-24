@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 
+import static com.alcanl.app.repository.database.DBConnector.*;
+
 public class ApplicationService {
     private ArrayList<Material> materials;
 
@@ -60,32 +62,35 @@ public class ApplicationService {
     {
         Executors.newSingleThreadExecutor().execute(this::reloadListCallback);
     }
-    public void updateData(String updateInfo, int oldDataId, String newData)
+    public boolean updateData(String updateInfo, int oldDataId, String newData)
     {
+        var isSuccessUpdate = false;
+
         try {
             switch (updateInfo.toLowerCase()) {
                 case "name" -> {
-                    DBConnector.updateDataName(oldDataId, newData);
+                    isSuccessUpdate = updateDataName(oldDataId, newData);
                     reloadList();
                 }
                 case "length" -> {
-                    DBConnector.updateDataLength(oldDataId, newData);
+                    isSuccessUpdate = updateDataLength(oldDataId, newData);
                     reloadList();
                 }
                 case "radius" -> {
-                    DBConnector.updateDataRadius(oldDataId, Double.parseDouble(newData));
+                    isSuccessUpdate = updateDataRadius(oldDataId, Double.parseDouble(newData));
                     reloadList();
                 }
                 case "price" -> {
-                    DBConnector.updateDataUnitPrice(oldDataId, Double.parseDouble(newData));
+                    isSuccessUpdate = updateDataUnitPrice(oldDataId, Double.parseDouble(newData));
                     reloadList();
                 }
                 default -> throw new ServiceException(new Throwable("Invalid Data"));
             }
+            return isSuccessUpdate;
 
         } catch (NumberFormatException ex)
         {
-            throw new ServiceException(new Throwable("Invalid Data Format"));
+            return false;
         }
     }
     public void updateAllDataUnitPrices(double ratio)
