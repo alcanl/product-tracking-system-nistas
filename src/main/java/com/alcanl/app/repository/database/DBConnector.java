@@ -6,12 +6,13 @@ import com.alcanl.app.repository.RepositoryException;
 import com.alcanl.app.repository.entity.Material;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.*;
 
 public final class DBConnector {
-    private final static ExecutorService threadPool = Executors.newSingleThreadExecutor();
     private DBConnector() {}
-    private static boolean saveNewDataCallback(Material material)
+    public static boolean saveNewData(Material material)
     {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
 
@@ -31,7 +32,7 @@ public final class DBConnector {
             throw new RepositoryException(ex.getCause());
         }
     }
-    private static void selectAllQueryCallBack(ResultSet resultSet, ArrayList<Material> arrayList)
+    private static void selectAllQuery(ResultSet resultSet, List<Material> arrayList)
     {
         try {
             while (resultSet.next()) {
@@ -47,13 +48,13 @@ public final class DBConnector {
             throw new RepositoryException(ex.getCause());
         }
     }
-    private static ArrayList<Material> runSelectAllQuery(Connection connection) throws SQLException {
+    private static List<Material> runSelectAllQuery(Connection connection) throws SQLException {
 
-        var arrayList = new ArrayList<Material>();
+        var list = new ArrayList<Material>();
         var resultSet = connection.createStatement().executeQuery(SELECT_ALL_DATA);
-        threadPool.execute(() -> selectAllQueryCallBack(resultSet, arrayList));
+        selectAllQuery(resultSet, list);
 
-        return arrayList;
+        return list;
     }
     private static boolean updateDoubleData(int id, String command, double newValue)
     {
@@ -115,7 +116,7 @@ public final class DBConnector {
             throw new RepositoryException(ex.getCause());
         }
     }
-    public static ArrayList<Material> getAllData()
+    public static List<Material> getAllData()
     {
         try (Connection connection = DriverManager.getConnection(DB_URL)){
 
@@ -128,11 +129,6 @@ public final class DBConnector {
         }
 
     }
-    public static void saveNewData(Material material)
-    {
-        threadPool.execute(() -> saveNewDataCallback(material));
-    }
-
     public static boolean updateDataName(int id, String newName)
     {
         return updateStringData(id, UPDATE_COLUMN_NAME, newName);

@@ -4,22 +4,26 @@ import com.alcanl.app.global.Resources;
 import com.alcanl.app.repository.RepositoryException;
 import com.alcanl.app.repository.database.DBConnector;
 import com.alcanl.app.repository.entity.Material;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import static com.alcanl.app.repository.database.DBConnector.*;
 
 public class ApplicationService {
-    private ArrayList<Material> materials;
-
+    private List<Material> materials;
     public ApplicationService()
     {
-        materials = DBConnector.getAllData();
+        loadList();
     }
-    private void reloadListCallback()
+    private void loadList()
     {
-        materials = DBConnector.getAllData();
+        try {
+            materials = DBConnector.getAllData();
+        }catch (RepositoryException ex)
+        {
+            throw new ServiceException(ex.getCause());
+        }
     }
     public List<Material> findByName(String name)
     {
@@ -50,6 +54,10 @@ public class ApplicationService {
             throw new ServiceException(ex.getCause());
         }
     }
+    public List<Material> getDataFromDB()
+    {
+        return materials;
+    }
     public List<Material> searchNamesByHint(String hint)
     {
         try {
@@ -60,7 +68,7 @@ public class ApplicationService {
     }
     public void reloadList()
     {
-        Executors.newSingleThreadExecutor().execute(this::reloadListCallback);
+        Executors.newSingleThreadExecutor().execute(this::loadList);
     }
     public boolean updateData(String updateInfo, int oldDataId, String newData)
     {

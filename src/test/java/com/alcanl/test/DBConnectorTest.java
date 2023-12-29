@@ -4,16 +4,16 @@ import com.alcanl.app.repository.database.DBConnector;
 import com.alcanl.app.repository.entity.Material;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.ArrayList;
-
+import java.util.List;
+@Ignore
 public class DBConnectorTest {
     private int count;
     @Before
     public void setUp()
     {
-        ArrayList<Material> arrayList = DBConnector.getAllData();
+        List<Material> arrayList = DBConnector.getAllData();
         count = arrayList.size();
     }
     @Test

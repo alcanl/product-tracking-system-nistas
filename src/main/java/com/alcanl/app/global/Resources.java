@@ -20,6 +20,12 @@ public final class Resources {
     public static final String UPDATE_COLUMN_LENGTH = "UPDATE material_info SET material_length='?' WHERE material_id=?";
     public static final String UPDATE_COLUMN_UNIT_PRICE = "UPDATE material_info SET material_unit_price=? WHERE material_id=?";
     public static final String UPDATE_ALL_UNIT_PRICES = "UPDATE material_info SET material_unit_price = (material_unit_price * ?)";
+    public static final String COMPANY_NAME = "Nistaş Yapı Malzemeleri";
+    public static final String TABLE_COLUMN_HEADER_NAME = "Ürün Adı";
+    public static final String TABLE_COLUMN_HEADER_LENGTH = "Ürün Uzunluk";
+    public static final String TABLE_COLUMN_HEADER_RADIUS = "Ürün Çapı";
+    public static final String TABLE_COLUMN_HEADER_UNIT_PRICE = "Birim Fiyatı";
+    public static final String NO_VALUE = "Değer Yok";
     private Resources() {}
 
 }
