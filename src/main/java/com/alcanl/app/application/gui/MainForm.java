@@ -1,19 +1,19 @@
 package com.alcanl.app.application.gui;
 
+import static com.alcanl.app.global.Resources.*;
+import static com.google.common.io.Resources.getResource;
+
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.repository.entity.Material;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.ServiceException;
-
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTableUI;
-import javax.swing.plaf.multi.MultiTableUI;
 import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.math.RoundingMode;
 
-import static com.alcanl.app.global.Resources.*;
 
 public class MainForm extends JFrame {
     private JPanel jPanelMain;
@@ -32,30 +32,34 @@ public class MainForm extends JFrame {
     private JPanel panelTable;
     private JPanel panelLogo;
     private JScrollPane paneTable;
+    private JButton buttonGetAllData;
+    private JList listSaleBasket;
+    private JLabel labelLogo;
+    private JButton button1;
+    private JScrollPane scrollPaneSaleBasket;
+    private JPanel panelTotal;
+    private JPanel panelBasket;
     private DefaultTableModel defaultTableModel;
     private ApplicationService applicationService;
 
     public MainForm()
     {
+        Resources.setLayout(NIMBUS_THEME);
         add(jPanelMain);
-        setSize(1400, 1000);
+        setSize(1400, 800);
         setTitle(COMPANY_NAME);
+        setIconImage(Toolkit.getDefaultToolkit().createImage(getResource(DEFAULT_ICON)));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(1024, 768));
-
+        initializeLogo(labelLogo);
         try {
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
             applicationService = new ApplicationService();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
+        } catch (ServiceException ignore) {}
 
-        }
-        catch (ServiceException ex)
-        {
-
-        }
         setVisible(true);
         setTableModel();
+        buttonGetAllData.addActionListener(e -> fillTable());
     }
     public void setTableModel()
     {
@@ -67,6 +71,7 @@ public class MainForm extends JFrame {
         tableProducts.getTableHeader().setReorderingAllowed(false);
         tableProducts.getTableHeader().setResizingAllowed(false);
         tableProducts.getTableHeader().setUpdateTableInRealTime(true);
+
         fillTable();
     }
     private void fillTableCallback(Material material)
@@ -84,6 +89,15 @@ public class MainForm extends JFrame {
     private void tableOnItemSelectedListener()
     {
         tableProducts.setUI(new BasicTableUI());
+    }
+    private void clearTable()
+    {
+        var clearTableModel = (DefaultTableModel) tableProducts.getModel();
+        clearTableModel.setRowCount(0);
+    }
+    private void getAllProductButtonClickedCallback()
+    {
+
     }
 
 }
