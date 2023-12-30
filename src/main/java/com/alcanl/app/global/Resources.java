@@ -24,7 +24,7 @@ public final class Resources {
     public static final String TABLE_COLUMN_HEADER_NAME = "Ürün Adı";
     public static final String TABLE_COLUMN_HEADER_LENGTH = "Ürün Uzunluk";
     public static final String TABLE_COLUMN_HEADER_RADIUS = "Ürün Çapı";
-    public static final String TABLE_COLUMN_HEADER_UNIT_PRICE = "Birim Fiyatı";
+    public static final String TABLE_COLUMN_HEADER_UNIT_PRICE = "Birim Satış Fiyatı";
     public static final String NO_VALUE = "Değer Yok";
     private Resources() {}
 

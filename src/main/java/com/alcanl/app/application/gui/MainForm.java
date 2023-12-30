@@ -6,8 +6,12 @@ import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.ServiceException;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTableUI;
+import javax.swing.plaf.multi.MultiTableUI;
+import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.math.RoundingMode;
 
 import static com.alcanl.app.global.Resources.*;
 
@@ -58,6 +62,7 @@ public class MainForm extends JFrame {
         defaultTableModel = new DefaultTableModel();
         Object[] tableHeaders = {TABLE_COLUMN_HEADER_NAME, TABLE_COLUMN_HEADER_LENGTH, TABLE_COLUMN_HEADER_RADIUS, TABLE_COLUMN_HEADER_UNIT_PRICE};
         defaultTableModel.setColumnIdentifiers(tableHeaders);
+        tableProducts.setUI(new SynthTableUI());
         tableProducts.setModel(defaultTableModel);
         tableProducts.getTableHeader().setReorderingAllowed(false);
         tableProducts.getTableHeader().setResizingAllowed(false);
@@ -68,12 +73,17 @@ public class MainForm extends JFrame {
     {
         var materialLength = material.getLength().orElse(NO_VALUE);
         var materialRadius = material.getRadius().orElse(0.0);
-        Object[] data = {material.getName(), materialLength, materialRadius, material.getUnitPrice()};
+        Object[] data = {material.getName(), materialLength,
+                materialRadius, material.calculateUnitSalePrice().setScale(2, RoundingMode.CEILING)};
         defaultTableModel.addRow(data);
     }
     private void fillTable()
     {
         applicationService.getDataFromDB().forEach(this::fillTableCallback);
+    }
+    private void tableOnItemSelectedListener()
+    {
+        tableProducts.setUI(new BasicTableUI());
     }
 
 }
