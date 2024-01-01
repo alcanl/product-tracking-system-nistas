@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.math.RoundingMode;
 import java.util.List;
 
@@ -45,23 +47,16 @@ public class MainForm extends JFrame {
 
     public MainForm()
     {
-        Resources.setLayout(NIMBUS_THEME);
-        add(jPanelMain);
-        setSize(1400, 800);
-        setTitle(COMPANY_NAME);
-        setIconImage(Toolkit.getDefaultToolkit().createImage(getResource(DEFAULT_ICON)));
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setMinimumSize(new Dimension(1024, 768));
-        initializeLogo(labelLogo);
-
         try {
             applicationService = new ApplicationService();
         } catch (ServiceException ignore) {}
 
-        setVisible(true);
+        initializeFrame();
+        initializeLogo(labelLogo);
         initializeTable();
         initializeButtons();
+        initializeTextFields();
+        setVisible(true);
     }
     private void initializeTable()
     {
@@ -73,6 +68,17 @@ public class MainForm extends JFrame {
         tableProducts.setCellSelectionEnabled(false);
 
         fillTable(applicationService.getDataFromDB());
+    }
+    private void initializeFrame()
+    {
+        Resources.setLayout(NIMBUS_THEME);
+        add(jPanelMain);
+        setSize(1400, 800);
+        setTitle(COMPANY_NAME);
+        setIconImage(Toolkit.getDefaultToolkit().createImage(getResource(DEFAULT_ICON)));
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setMinimumSize(new Dimension(1024, 768));
     }
     private void initializeTableModel()
     {
@@ -112,6 +118,22 @@ public class MainForm extends JFrame {
         buttonSearchByName.addActionListener(e -> buttonSearchByNameClickedCallback());
         buttonSearchByRadius.addActionListener(e -> buttonSearchByRadiusClickedCallback());
     }
+    private void initializeTextFields()
+    {
+        setSeekBarTextFieldToButtonListener(textFieldSearchByRadius, buttonSearchByRadius);
+        setSeekBarTextFieldToButtonListener(textFieldSearchByLength, buttonSearchByLength);
+        setSeekBarTextFieldToButtonListener(textFieldSearchByName, buttonSearchByName);
+    }
+    private void setSeekBarTextFieldToButtonListener(JTextField textField, JButton button)
+    {
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER)
+                    button.doClick();
+            }
+        });
+    }
     private void buttonSearchByNameClickedCallback()
     {
         doCommonButtonWorks(textFieldSearchByName, SearchType.NAME);
@@ -127,6 +149,7 @@ public class MainForm extends JFrame {
     private void doCommonButtonWorks(JTextField textField, SearchType searchType)
     {
         var searchText = textField.getText().trim();
+        textField.setText("");
 
         try {
             var list = switch (searchType) {

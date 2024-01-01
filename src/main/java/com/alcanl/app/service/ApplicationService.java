@@ -49,7 +49,8 @@ public class ApplicationService {
     {
         try {
             return materials.stream().filter(m -> m.getRadius().isPresent())
-                    .filter(m -> m.getRadius().getAsDouble() - radius < Resources.DOUBLE_THRESHOLD).toList();
+                    .filter(m -> radius - m.getRadius().getAsDouble() < Resources.DOUBLE_THRESHOLD
+                    && radius - m.getRadius().getAsDouble() >= 0).toList();
         } catch (RepositoryException ex) {
             throw new ServiceException(ex.getCause());
         }
