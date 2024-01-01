@@ -12,10 +12,11 @@ import javax.swing.*;
 import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainForm extends JFrame {
@@ -42,8 +43,13 @@ public class MainForm extends JFrame {
     private JScrollPane scrollPaneSaleBasket;
     private JPanel panelTotal;
     private JPanel panelBasket;
+    private JLabel labelTotalCount;
+    private JButton buttonAddNewMaterial;
+    private JButton button3;
+    private JButton button4;
     private DefaultTableModel defaultTableModel;
     private ApplicationService applicationService;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     public MainForm()
     {
@@ -105,6 +111,7 @@ public class MainForm extends JFrame {
         }
 
         list.forEach(this::fillTableCallback);
+        labelTotalCount.setText(String.format("Toplam Ürün Sayısı : %d", list.size()));
     }
     private void buttonGetAllProductClickedCallback()
     {
@@ -117,6 +124,9 @@ public class MainForm extends JFrame {
         buttonSearchByLength.addActionListener(e -> buttonSearchByLengthClickedCallback());
         buttonSearchByName.addActionListener(e -> buttonSearchByNameClickedCallback());
         buttonSearchByRadius.addActionListener(e -> buttonSearchByRadiusClickedCallback());
+        buttonAddNewMaterial.setBorderPainted(false);
+        setButtonCursors(jPanelMain);
+
     }
     private void initializeTextFields()
     {
@@ -164,6 +174,15 @@ public class MainForm extends JFrame {
         } catch (NumberFormatException ex)
         {
             showUnsupportedFormatWarningMessageDialog();
+        }
+    }
+    private void setButtonCursors(JPanel panel)
+    {
+        for (Component component : panel.getComponents()) {
+            if (component instanceof JPanel panelChild)
+                setButtonCursors(panelChild);
+            else if (component instanceof JButton button)
+                button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         }
     }
 }
