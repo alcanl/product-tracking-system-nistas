@@ -2,7 +2,6 @@ package com.alcanl.app.global;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.MessageFormat;
 
 import static com.google.common.io.Resources.getResource;
 
@@ -40,6 +39,9 @@ public final class Resources {
     public static final String DEFAULT_LOGO = "logo.png";
     public static final String ERROR_MESSAGE = "Bilinmeyen bir hata oluştu.";
     public static final String ERROR_TITLE = "Hata";
+    public static final String WARNING_TITLE = "Uyarı";
+    public static final String ERROR_UNSUPPORTED_FORMAT = "Bu işlem için desteklenmeyen formatta bir değer girdiniz!";
+    public static final String WARNING_EMPTY_SEARCH_LIST = "Aratılan değere ilişkin ürün bulunmamaktadır.";
 
     private Resources() {}
     public static void setLayout(String theme) {
@@ -66,6 +68,19 @@ public final class Resources {
     private static void setOkButtonTR()
     {
         UIManager.put("OptionPane.okButtonText", "Tamam");
+    }
+    public static void showUnsupportedFormatWarningMessageDialog()
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, ERROR_UNSUPPORTED_FORMAT, ERROR_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+    }
+    public static void showEmptyListWarningMessageDialog()
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, WARNING_EMPTY_SEARCH_LIST, WARNING_TITLE,
+                JOptionPane.INFORMATION_MESSAGE);
+
     }
 
 }

@@ -28,7 +28,7 @@ public class ApplicationService {
     public List<Material> findByName(String name)
     {
         try {
-            return materials.stream().filter(m -> m.getName().equalsIgnoreCase(name)).toList();
+            return materials.stream().filter(m -> m.getName().toLowerCase().contains(name.toLowerCase())).toList();
         } catch (RepositoryException ex)
         {
             throw new ServiceException(ex.getCause());
@@ -38,7 +38,7 @@ public class ApplicationService {
     {
         try {
             return materials.stream().filter(m -> m.getLength().isPresent())
-                    .filter(m -> m.getLength().get().equalsIgnoreCase(length)).toList();
+                    .filter(m -> m.getLength().get().toLowerCase().contains(length.toLowerCase())).toList();
         } catch (RepositoryException ex)
         {
             throw new ServiceException(ex.getCause());
