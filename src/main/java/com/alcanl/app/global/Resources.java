@@ -42,6 +42,11 @@ public final class Resources {
     public static final String WARNING_TITLE = "Uyarı";
     public static final String ERROR_UNSUPPORTED_FORMAT = "Bu işlem için desteklenmeyen formatta bir değer girdiniz!";
     public static final String WARNING_EMPTY_SEARCH_LIST = "Aratılan değere ilişkin ürün bulunmamaktadır.";
+    public static final String ADD_PRODUCT_TO_SALE_CART = "Sepete Ekle";
+    public static final String UPDATE_SELECTED_PRODUCT = "Düzenle";
+    public static final String DELETE_SELECTED_PRODUCT = "Sil";
+    public static final String ADD_NEW_PRODUCT = "Yeni Ürün Ekle";
+    public static final String TOTAL_TABLE_COUNT = "Toplam Ürün Sayısı : %d";
 
     private Resources() {}
     public static void setLayout(String theme) {

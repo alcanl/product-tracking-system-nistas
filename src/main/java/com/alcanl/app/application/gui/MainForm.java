@@ -3,6 +3,7 @@ package com.alcanl.app.application.gui;
 import static com.alcanl.app.global.Resources.*;
 import static com.google.common.io.Resources.getResource;
 
+import com.alcanl.app.application.gui.popup.TableItemRightClickPopUpMenu;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.global.SearchType;
 import com.alcanl.app.repository.entity.Material;
@@ -14,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +51,7 @@ public class MainForm extends JFrame {
     private JButton button4;
     private DefaultTableModel defaultTableModel;
     private ApplicationService applicationService;
+    private String tableSelectedItem;
     private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     public MainForm()
@@ -70,8 +73,16 @@ public class MainForm extends JFrame {
         tableProducts.setUI(new SynthTableUI());
         tableProducts.getTableHeader().setReorderingAllowed(false);
         tableProducts.getTableHeader().setResizingAllowed(false);
-        tableProducts.getTableHeader().setUpdateTableInRealTime(false);
-        tableProducts.setCellSelectionEnabled(false);
+        tableProducts.getTableHeader().setUpdateTableInRealTime(true);
+        tableProducts.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Point point = e.getPoint();
+                int currentRow = tableProducts.rowAtPoint(point);
+                tableProducts.setRowSelectionInterval(currentRow, currentRow);
+            }
+        });
+        tableProducts.setComponentPopupMenu(new TableItemRightClickPopUpMenu());
 
         fillTable(applicationService.getDataFromDB());
     }
@@ -88,7 +99,12 @@ public class MainForm extends JFrame {
     }
     private void initializeTableModel()
     {
-        defaultTableModel = new DefaultTableModel();
+        defaultTableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               return false;
+            }
+        };
         Object[] tableHeaders = {TABLE_COLUMN_HEADER_NAME, TABLE_COLUMN_HEADER_LENGTH, TABLE_COLUMN_HEADER_RADIUS, TABLE_COLUMN_HEADER_UNIT_PRICE};
         defaultTableModel.setColumnIdentifiers(tableHeaders);
     }
@@ -111,7 +127,7 @@ public class MainForm extends JFrame {
         }
 
         list.forEach(this::fillTableCallback);
-        labelTotalCount.setText(String.format("Toplam Ürün Sayısı : %d", list.size()));
+        labelTotalCount.setText(String.format(TOTAL_TABLE_COUNT, list.size()));
     }
     private void buttonGetAllProductClickedCallback()
     {
@@ -124,7 +140,7 @@ public class MainForm extends JFrame {
         buttonSearchByLength.addActionListener(e -> buttonSearchByLengthClickedCallback());
         buttonSearchByName.addActionListener(e -> buttonSearchByNameClickedCallback());
         buttonSearchByRadius.addActionListener(e -> buttonSearchByRadiusClickedCallback());
-        buttonAddNewMaterial.setBorderPainted(false);
+        setBottomBarButtonTheme(panelBottomBar);
         setButtonCursors(jPanelMain);
 
     }
@@ -184,5 +200,29 @@ public class MainForm extends JFrame {
             else if (component instanceof JButton button)
                 button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         }
+    }
+    private void setBottomBarButtonTheme(JPanel panel)
+    {
+        Arrays.stream(panel.getComponents()).filter(c -> c instanceof JButton)
+                .map(c -> (JButton)c).forEach(this::setBottomBarButtonThemeCallback);
+
+    }
+    private void setBottomBarButtonThemeCallback(JButton button)
+    {
+        button.setBackground(Color.lightGray);
+        button.setBorderPainted(false);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(Color.darkGray);
+                button.setForeground(Color.white);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(Color.lightGray);
+                button.setForeground(Color.black);
+            }
+        });
     }
 }
