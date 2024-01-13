@@ -1,4 +1,4 @@
-package com.alcanl.app.application;
+package com.alcanl.app;
 
 import com.alcanl.app.application.gui.MainForm;
 

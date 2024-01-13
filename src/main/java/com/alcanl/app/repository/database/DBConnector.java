@@ -6,9 +6,7 @@ import com.alcanl.app.repository.RepositoryException;
 import com.alcanl.app.repository.entity.Material;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
 
 public final class DBConnector {
     private DBConnector() {}

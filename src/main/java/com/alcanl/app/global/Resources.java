@@ -18,8 +18,8 @@ public final class Resources {
     public static final String COLUMN_LENGTH = "material_length";
     public static final String COLUMN_UNIT_PRICE = "material_unit_price";
     public static final String ADD_NEW_DATA = "INSERT INTO material_info(material_name, material_radius, material_length, material_unit_price) values(?,?,?,?)";
-    public static final String DELETE_DATA_BY_ID = "DELETE material_info WHERE material_id=?";
-    public static final String DELETE_DATA_BY_NAME = "DELETE material_info WHERE material_name=?";
+    public static final String DELETE_DATA_BY_ID = "DELETE FROM material_info WHERE material_id=?";
+    public static final String DELETE_DATA_BY_NAME = "DELETE FROM material_info WHERE material_name=?";
     public static final String UPDATE_COLUMN_NAME = "UPDATE material_info SET material_name='?' WHERE material_id=?";
     public static final String UPDATE_COLUMN_RADIUS = "UPDATE material_info SET material_radius=? WHERE material_id=?";
     public static final String UPDATE_COLUMN_LENGTH = "UPDATE material_info SET material_length='?' WHERE material_id=?";
@@ -32,9 +32,6 @@ public final class Resources {
     public static final String TABLE_COLUMN_HEADER_UNIT_PRICE = "Birim Satış Fiyatı";
     public static final String NO_VALUE = "Değer Yok";
     public static final String NIMBUS_THEME = "Nimbus";
-    public static final String METAL_THEME = "Metal";
-    public static final String WINDOWS_THEME = "Windows";
-    public static final String DEFAULT_THEME = "Windows Classic";
     public static final String DEFAULT_ICON = "icon.png";
     public static final String DEFAULT_LOGO = "logo.png";
     public static final String ERROR_MESSAGE = "Bilinmeyen bir hata oluştu.";
@@ -47,6 +44,9 @@ public final class Resources {
     public static final String DELETE_SELECTED_PRODUCT = "Sil";
     public static final String ADD_NEW_PRODUCT = "Yeni Ürün Ekle";
     public static final String TOTAL_TABLE_COUNT = "Toplam Ürün Sayısı : %d";
+    private static final String ERROR_MESSAGE_EMPTY_NAME = "Ürün isim bilgisi boş bırakılamaz";
+    private static final String ERROR_MESSAGE_EMPTY_UNIT_PRICE = "Ürün birim fiyat bilgisi boş bırakılamaz";
+    private static final String WARNING_MESSAGE_DELETE_ITEM = "Seçili ürünü silmek üzeresiniz. Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?";
 
     private Resources() {}
     public static void setLayout(String theme) {
@@ -74,6 +74,11 @@ public final class Resources {
     {
         UIManager.put("OptionPane.okButtonText", "Tamam");
     }
+    private static void setYesNoButtonTR()
+    {
+        UIManager.put("OptionPane.yesButtonText", "Evet");
+        UIManager.put("OptionPane.noButtonText", "Hayır");
+    }
     public static void showUnsupportedFormatWarningMessageDialog()
     {
         setOkButtonTR();
@@ -87,5 +92,20 @@ public final class Resources {
                 JOptionPane.INFORMATION_MESSAGE);
 
     }
-
+    public static int showEnsureWarningMessageDialog()
+    {
+        setYesNoButtonTR();
+        return JOptionPane.showConfirmDialog(null, WARNING_MESSAGE_DELETE_ITEM, WARNING_TITLE,
+                JOptionPane.YES_NO_OPTION);
+    }
+    public static void showEmptyNameTextErrorMessage()
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, ERROR_MESSAGE_EMPTY_NAME, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+    }
+    public static void showEmptyUnitPriceTextErrorMessage()
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, ERROR_MESSAGE_EMPTY_UNIT_PRICE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+    }
 }

@@ -14,19 +14,19 @@ public class Material {
     private BigDecimal m_unitPrice;
     public Material(int id, String name, Double radius, String length, double unitPrice)
     {
-        this(name, radius, length, unitPrice);
+        this(name, radius, length, BigDecimal.valueOf(unitPrice));
         m_id = id;
     }
-    public Material(String name, double radius, String length, double unitPrice)
+    public Material(String name, double radius, String length, BigDecimal unitPrice)
     {
         setName(name);
         setRadius(radius);
         setLength(length);
         setUnitPrice(unitPrice);
     }
-    public void setUnitPrice(double value)
+    public void setUnitPrice(BigDecimal value)
     {
-        m_unitPrice = BigDecimal.valueOf(value);
+        m_unitPrice = value;
     }
     public BigDecimal getUnitPrice()
     {

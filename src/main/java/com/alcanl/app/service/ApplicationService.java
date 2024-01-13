@@ -6,12 +6,14 @@ import com.alcanl.app.repository.database.DBConnector;
 import com.alcanl.app.repository.entity.Material;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.alcanl.app.repository.database.DBConnector.*;
 
 public class ApplicationService {
     private List<Material> materials;
+    public final static ExecutorService ms_threadPool = Executors.newSingleThreadExecutor();
     public ApplicationService()
     {
         loadList();
@@ -59,17 +61,9 @@ public class ApplicationService {
     {
         return materials;
     }
-    public List<Material> searchNamesByHint(String hint)
-    {
-        try {
-            return materials.stream().filter(m -> m.getName().toLowerCase().contains(hint.toLowerCase())).toList();
-        } catch (RepositoryException ex) {
-            throw new ServiceException(ex.getCause());
-        }
-    }
     public void reloadList()
     {
-        Executors.newSingleThreadExecutor().execute(this::loadList);
+        ms_threadPool.execute(this::loadList);
     }
     public boolean updateData(String updateInfo, int oldDataId, String newData)
     {
@@ -105,6 +99,17 @@ public class ApplicationService {
     public void updateAllDataUnitPrices(double ratio)
     {
         DBConnector.updateAllDataUnitPrices(ratio);
+        reloadList();
+    }
+    public void saveNewData(Material material)
+    {
+        DBConnector.saveNewData(material);
+        reloadList();
+    }
+    public void deleteMaterial(Material material)
+    {
+        var selectedMaterial = materials.stream().filter(m -> m.equals(material)).findFirst();
+        selectedMaterial.ifPresent(m -> DBConnector.deleteData(m.getId()));
         reloadList();
     }
 }

@@ -3,6 +3,7 @@ package com.alcanl.app.application.gui;
 import static com.alcanl.app.global.Resources.*;
 import static com.google.common.io.Resources.getResource;
 
+import com.alcanl.app.application.gui.dialog.DialogAddNewMaterial;
 import com.alcanl.app.application.gui.popup.TableItemRightClickPopUpMenu;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.global.SearchType;
@@ -14,6 +15,7 @@ import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
@@ -49,15 +51,15 @@ public class MainForm extends JFrame {
     private JButton buttonAddNewMaterial;
     private JButton button3;
     private JButton button4;
-    private DefaultTableModel defaultTableModel;
-    private ApplicationService applicationService;
-    private String tableSelectedItem;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private DefaultTableModel m_defaultTableModel;
+    private ApplicationService m_applicationService;
+    public static volatile boolean IS_LIST_CHANGE = false;
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public MainForm()
     {
         try {
-            applicationService = new ApplicationService();
+            m_applicationService = new ApplicationService();
         } catch (ServiceException ignore) {}
 
         initializeFrame();
@@ -66,6 +68,7 @@ public class MainForm extends JFrame {
         initializeButtons();
         initializeTextFields();
         setVisible(true);
+        startListEventListener();
     }
     private void initializeTable()
     {
@@ -74,17 +77,29 @@ public class MainForm extends JFrame {
         tableProducts.getTableHeader().setReorderingAllowed(false);
         tableProducts.getTableHeader().setResizingAllowed(false);
         tableProducts.getTableHeader().setUpdateTableInRealTime(true);
+        tableProducts.setComponentPopupMenu(new TableItemRightClickPopUpMenu(m_applicationService));
+        fillTable(m_applicationService.getDataFromDB());
         tableProducts.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 Point point = e.getPoint();
                 int currentRow = tableProducts.rowAtPoint(point);
                 tableProducts.setRowSelectionInterval(currentRow, currentRow);
+
+                if (SwingUtilities.isRightMouseButton(e))
+                {
+                    executorService.execute(()-> {
+                        var materialName = (String) tableProducts.getValueAt(tableProducts.getSelectedRow(), 0);
+                        var materialLength = tableProducts.getValueAt(tableProducts.getSelectedRow(), 1)
+                                .equals(NO_VALUE) ? "" : (String) tableProducts.getValueAt(tableProducts.getSelectedRow(), 1);
+                        var materialRadius = (double) tableProducts.getValueAt(tableProducts.getSelectedRow(), 2);
+                        var materialPrice = (BigDecimal) tableProducts.getValueAt(tableProducts.getSelectedRow(), 3);
+
+                        TableItemRightClickPopUpMenu.m_selectedMaterial = new Material(materialName, materialRadius, materialLength, materialPrice);
+                    });
+                }
             }
         });
-        tableProducts.setComponentPopupMenu(new TableItemRightClickPopUpMenu());
-
-        fillTable(applicationService.getDataFromDB());
     }
     private void initializeFrame()
     {
@@ -96,17 +111,27 @@ public class MainForm extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(1024, 768));
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e)
+            {
+                super.windowClosed(e);
+                executorService.shutdown();
+                ApplicationService.ms_threadPool.shutdown();
+            }
+        });
     }
     private void initializeTableModel()
     {
-        defaultTableModel = new DefaultTableModel() {
+        m_defaultTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
                return false;
             }
         };
         Object[] tableHeaders = {TABLE_COLUMN_HEADER_NAME, TABLE_COLUMN_HEADER_LENGTH, TABLE_COLUMN_HEADER_RADIUS, TABLE_COLUMN_HEADER_UNIT_PRICE};
-        defaultTableModel.setColumnIdentifiers(tableHeaders);
+        m_defaultTableModel.setColumnIdentifiers(tableHeaders);
     }
     private void fillTableCallback(Material material)
     {
@@ -116,8 +141,8 @@ public class MainForm extends JFrame {
                 materialRadius,
                 material.calculateUnitSalePrice().setScale(2, RoundingMode.CEILING)};
 
-        defaultTableModel.addRow(data);
-        tableProducts.setModel(defaultTableModel);
+        m_defaultTableModel.addRow(data);
+        tableProducts.setModel(m_defaultTableModel);
     }
     private void fillTable(List<Material> list)
     {
@@ -132,7 +157,7 @@ public class MainForm extends JFrame {
     private void buttonGetAllProductClickedCallback()
     {
         initializeTableModel();
-        fillTable(applicationService.getDataFromDB());
+        fillTable(m_applicationService.getDataFromDB());
     }
     private void initializeButtons()
     {
@@ -140,6 +165,7 @@ public class MainForm extends JFrame {
         buttonSearchByLength.addActionListener(e -> buttonSearchByLengthClickedCallback());
         buttonSearchByName.addActionListener(e -> buttonSearchByNameClickedCallback());
         buttonSearchByRadius.addActionListener(e -> buttonSearchByRadiusClickedCallback());
+        buttonAddNewMaterial.addActionListener(e -> buttonAddNewMaterialClickedCallBack());
         setBottomBarButtonTheme(panelBottomBar);
         setButtonCursors(jPanelMain);
 
@@ -179,9 +205,9 @@ public class MainForm extends JFrame {
 
         try {
             var list = switch (searchType) {
-                case NAME -> applicationService.findByName(searchText);
-                case LENGTH -> applicationService.findByLength(searchText);
-                case RADIUS -> applicationService.findByRadius(Double.parseDouble(searchText));
+                case NAME -> m_applicationService.findByName(searchText);
+                case LENGTH -> m_applicationService.findByLength(searchText);
+                case RADIUS -> m_applicationService.findByRadius(Double.parseDouble(searchText));
             };
 
             initializeTableModel();
@@ -224,5 +250,29 @@ public class MainForm extends JFrame {
                 button.setForeground(Color.black);
             }
         });
+    }
+    private void buttonAddNewMaterialClickedCallBack()
+    {
+        var addNewMaterialDialog = new DialogAddNewMaterial(m_applicationService);
+        addNewMaterialDialog.setLocationRelativeTo(null);
+        addNewMaterialDialog.setVisible(true);
+    }
+    private void startListEventListener()
+    {
+        var thread = new Thread(() -> {
+            while (true) {
+                if (IS_LIST_CHANGE) {
+                    try {
+                        Thread.sleep(700);
+                    } catch (InterruptedException ignore) {
+
+                    }
+                    buttonGetAllProductClickedCallback();
+                    IS_LIST_CHANGE = false;
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 }

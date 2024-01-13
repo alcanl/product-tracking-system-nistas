@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.math.BigDecimal;
 import java.util.List;
 @Ignore
 public class DBConnectorTest {
@@ -19,7 +21,7 @@ public class DBConnectorTest {
     @Test
     public void saveNewDataTest()
     {
-        DBConnector.saveNewData(new Material("TEST", 10.0, "120/80", 19.99));
+        DBConnector.saveNewData(new Material("TEST", 10.0, "120/80", BigDecimal.valueOf(19.99)));
         Assert.assertEquals(count + 1, DBConnector.getAllData().size());
     }
     @Test
