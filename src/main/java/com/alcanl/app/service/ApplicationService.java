@@ -14,10 +14,6 @@ import static com.alcanl.app.repository.database.DBConnector.*;
 public class ApplicationService {
     private List<Material> materials;
     public final static ExecutorService ms_threadPool = Executors.newSingleThreadExecutor();
-    public ApplicationService()
-    {
-        loadList();
-    }
     private void loadList()
     {
         try {
@@ -26,6 +22,10 @@ public class ApplicationService {
         {
             throw new ServiceException(ex.getCause());
         }
+    }
+    public ApplicationService()
+    {
+        loadList();
     }
     public List<Material> findByName(String name)
     {
@@ -53,36 +53,17 @@ public class ApplicationService {
     {
         ms_threadPool.execute(this::loadList);
     }
-    public boolean updateData(String updateInfo, int oldDataId, String newData)
+    public void updateData(Material material)
     {
-        var isSuccessUpdate = false;
-
         try {
-            switch (updateInfo.toLowerCase()) {
-                case "name" -> {
-                    isSuccessUpdate = updateDataName(oldDataId, newData);
-                    reloadList();
-                }
-                case "length" -> {
-                    isSuccessUpdate = updateDataLength(oldDataId, newData);
-                    reloadList();
-                }
-                case "radius" -> {
-                    isSuccessUpdate = updateDataRadius(oldDataId, Double.parseDouble(newData));
-                    reloadList();
-                }
-                case "price" -> {
-                    isSuccessUpdate = updateDataUnitPrice(oldDataId, Double.parseDouble(newData));
-                    reloadList();
-                }
-                default -> throw new ServiceException(new Throwable("Invalid Data"));
+                var id = material.getId();
+                updateDataName(id, material.getName());
+                updateDataLength(id, material.getLength().orElse(""));
+                updateDataRadius(id, material.getRadius().orElse(0.0));
+                updateDataUnitPrice(id, material.getUnitPrice().doubleValue());
+                reloadList();
             }
-            return isSuccessUpdate;
 
-        } catch (NumberFormatException ex)
-        {
-            return false;
-        }
         catch (RepositoryException ex)
         {
             throw new ServiceException(ex.getCause());
@@ -116,5 +97,9 @@ public class ApplicationService {
         } catch (RepositoryException ex) {
             throw new ServiceException(ex.getCause());
         }
+    }
+    public Material findMaterial(Material material)
+    {
+        return materials.stream().filter(material::equals).findFirst().orElse(null);
     }
 }

@@ -2,6 +2,7 @@ package com.alcanl.app.application.gui.popup;
 
 import com.alcanl.app.application.gui.MainForm;
 import com.alcanl.app.application.gui.dialog.DialogAddNewMaterial;
+import com.alcanl.app.application.gui.dialog.DialogUpdateMaterial;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.repository.entity.Material;
 import com.alcanl.app.service.ApplicationService;
@@ -51,7 +52,10 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
     }
     public void updateProductClicked()
     {
-        Resources.showUnsupportedFormatWarningMessageDialog();
+        var updateMaterialDialog = new DialogUpdateMaterial(m_applicationService);
+        updateMaterialDialog.pack();
+        updateMaterialDialog.setLocationRelativeTo(null);
+        updateMaterialDialog.setVisible(true);
     }
     public void deleteProductClicked()
     {

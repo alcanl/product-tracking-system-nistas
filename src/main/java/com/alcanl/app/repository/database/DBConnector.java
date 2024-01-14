@@ -10,26 +10,6 @@ import java.util.List;
 
 public final class DBConnector {
     private DBConnector() {}
-    public static boolean saveNewData(Material material)
-    {
-        try (Connection connection = DriverManager.getConnection(DB_URL)) {
-
-            var statement = connection.prepareStatement(ADD_NEW_DATA);
-
-            statement.setString(1, material.getName());
-            statement.setDouble(2, material.getRadius().orElse(0.0));
-            statement.setString(3, material.getLength().orElse(null));
-            statement.setDouble(4, material.getUnitPrice().doubleValue());
-
-            statement.executeUpdate();
-
-            return true;
-        }
-        catch(SQLException ex)
-        {
-            throw new RepositoryException(ex.getCause());
-        }
-    }
     private static void selectAllQuery(ResultSet resultSet, List<Material> arrayList)
     {
         try {
@@ -54,7 +34,7 @@ public final class DBConnector {
 
         return list;
     }
-    private static boolean updateDoubleData(int id, String command, double newValue)
+    private static void updateDoubleData(int id, String command, double newValue)
     {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
 
@@ -65,13 +45,12 @@ public final class DBConnector {
                 statement.setInt(2, id);
 
             statement.executeUpdate();
-            return true;
 
         } catch (SQLException ex) {
             throw new RepositoryException(ex.getCause());
         }
     }
-    private static boolean updateStringData(int id, String command, String newValue)
+    private static void updateStringData(int id, String command, String newValue)
     {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
 
@@ -80,27 +59,24 @@ public final class DBConnector {
             statement.setInt(2, id);
 
             statement.executeUpdate();
-            return true;
 
         } catch (SQLException ex)
         {
             throw new RepositoryException(ex.getCause());
         }
     }
-    public static boolean deleteData(int id) {
+    public static void deleteData(int id) {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
 
             var statement = connection.prepareStatement(DELETE_DATA_BY_ID);
             statement.setInt(1, id);
             statement.executeUpdate();
 
-            return true;
-
         } catch (SQLException ex) {
             throw new RepositoryException(ex.getCause());
         }
     }
-    public static boolean deleteData(String name)
+    public static void deleteData(String name)
     {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
 
@@ -108,7 +84,6 @@ public final class DBConnector {
             statement.setString(1, name);
             statement.executeUpdate();
 
-            return true;
 
         } catch (SQLException ex) {
             throw new RepositoryException(ex.getCause());
@@ -127,25 +102,44 @@ public final class DBConnector {
         }
 
     }
-    public static boolean updateDataName(int id, String newName)
+    public static void saveNewData(Material material)
     {
-        return updateStringData(id, UPDATE_COLUMN_NAME, newName);
+        try (Connection connection = DriverManager.getConnection(DB_URL)) {
+
+            var statement = connection.prepareStatement(ADD_NEW_DATA);
+
+            statement.setString(1, material.getName());
+            statement.setDouble(2, material.getRadius().orElse(0.0));
+            statement.setString(3, material.getLength().orElse(null));
+            statement.setDouble(4, material.getUnitPrice().doubleValue());
+
+            statement.executeUpdate();
+
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryException(ex.getCause());
+        }
     }
-    public static boolean updateDataLength(int id, String newLength)
+    public static void updateDataName(int id, String newName)
     {
-        return updateStringData(id, UPDATE_COLUMN_LENGTH, newLength);
+        updateStringData(id, UPDATE_COLUMN_NAME, newName);
     }
-    public static boolean updateDataRadius(int id, double newRadius)
+    public static void updateDataLength(int id, String newLength)
     {
-        return updateDoubleData(id, UPDATE_COLUMN_RADIUS, newRadius);
+        updateStringData(id, UPDATE_COLUMN_LENGTH, newLength);
     }
-    public static boolean updateDataUnitPrice(int id, double newUnitPrice)
+    public static void updateDataRadius(int id, double newRadius)
     {
-        return updateDoubleData(id, UPDATE_COLUMN_UNIT_PRICE, newUnitPrice);
+        updateDoubleData(id, UPDATE_COLUMN_RADIUS, newRadius);
+    }
+    public static void updateDataUnitPrice(int id, double newUnitPrice)
+    {
+        updateDoubleData(id, UPDATE_COLUMN_UNIT_PRICE, newUnitPrice);
     }
     //increases all data prices as ratio value
-    public static boolean updateAllDataUnitPrices(double ratio)
+    public static void updateAllDataUnitPrices(double ratio)
     {
-        return updateDoubleData(0, UPDATE_ALL_UNIT_PRICES, ratio);
+        updateDoubleData(0, UPDATE_ALL_UNIT_PRICES, ratio);
     }
 }

@@ -1,14 +1,8 @@
 package com.alcanl.app.application.gui.dialog;
 
-import com.alcanl.app.application.gui.MainForm;
-import com.alcanl.app.global.Resources;
-import com.alcanl.app.repository.entity.Material;
 import com.alcanl.app.service.ApplicationService;
-import com.alcanl.app.service.ServiceException;
-
 import javax.swing.*;
 import java.awt.event.*;
-import java.math.BigDecimal;
 
 @SuppressWarnings("ALL")
 public class DialogAddNewMaterial extends JDialog {
@@ -26,10 +20,10 @@ public class DialogAddNewMaterial extends JDialog {
     private JLabel labelRadius;
     private JLabel labelUnitPrice;
     private JPanel mainPanel;
-    private final ApplicationService m_ApplicationService;
+    private final ApplicationService m_applicationService;
     public DialogAddNewMaterial(ApplicationService applicationService)
     {
-        m_ApplicationService = applicationService;
+        m_applicationService = applicationService;
         setSize(390, 290);
         setContentPane(contentPane);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -56,68 +50,18 @@ public class DialogAddNewMaterial extends JDialog {
 
     public void onOK()
     {
-        try {
-            var material = getNewMaterialProps();
+        var material = DialogHelper.getNewMaterialProps(textFieldName, textFieldLength,
+                    textFieldRadius, textFieldUnitPrice);
 
-            if (material == null)
-                return;
+        if (material == null)
+            return;
 
-            m_ApplicationService.saveNewData(material);
-            MainForm.IS_LIST_CHANGE = true;
-            dispose();
-        } catch (ServiceException ex)
-        {
-            Resources.showUnknownErrorMessageDialog(ex.getMessage());
-        }
+        DialogHelper.saveNewData(m_applicationService, material);
+        dispose();
     }
 
     private void onCancel()
     {
         dispose();
     }
-    private String getMaterialName()
-    {
-        var test = textFieldName.getText();
-
-        if (test.equals("")) {
-            Resources.showEmptyNameTextErrorMessageDialog();
-            return null;
-        }
-        return textFieldName.getText();
-    }
-    private String getMaterialLength()
-    {
-        return textFieldLength.getText();
-    }
-    private double getMaterialRadius()
-    {
-        return textFieldRadius.getText().equals("") ? 0.0 : Double.parseDouble(textFieldRadius.getText());
-    }
-    private BigDecimal getMaterialUnitPrice()
-    {
-        if (textFieldUnitPrice.getText().equals("")) {
-            Resources.showEmptyUnitPriceTextErrorMessageDialog();
-            return null;
-        }
-
-        return new BigDecimal(textFieldUnitPrice.getText());
-    }
-    public Material getNewMaterialProps()
-    {
-        try {
-            var name = getMaterialName(); var length = getMaterialLength();
-            var radius = getMaterialRadius(); var unitPrice = getMaterialUnitPrice();
-
-            if (name == null || unitPrice == null)
-                return null;
-
-            return new Material(name, radius, length, unitPrice);
-        }
-        catch (NumberFormatException ignore)
-        {
-            Resources.showUnsupportedFormatWarningMessageDialog();
-            return null;
-        }
-    }
-
 }

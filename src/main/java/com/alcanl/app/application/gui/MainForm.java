@@ -124,6 +124,10 @@ public class MainForm extends JFrame {
             }
         });
     }
+    private void initializeList()
+    {
+        //
+    }
     private void initializeTableModel()
     {
         m_defaultTableModel = new DefaultTableModel() {
