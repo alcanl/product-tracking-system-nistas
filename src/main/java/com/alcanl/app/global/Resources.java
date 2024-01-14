@@ -98,14 +98,20 @@ public final class Resources {
         return JOptionPane.showConfirmDialog(null, WARNING_MESSAGE_DELETE_ITEM, WARNING_TITLE,
                 JOptionPane.YES_NO_OPTION);
     }
-    public static void showEmptyNameTextErrorMessage()
+    public static void showEmptyNameTextErrorMessageDialog()
     {
         setOkButtonTR();
         JOptionPane.showMessageDialog(null, ERROR_MESSAGE_EMPTY_NAME, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
     }
-    public static void showEmptyUnitPriceTextErrorMessage()
+    public static void showEmptyUnitPriceTextErrorMessageDialog()
     {
         setOkButtonTR();
         JOptionPane.showMessageDialog(null, ERROR_MESSAGE_EMPTY_UNIT_PRICE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+    }
+    public static void showUnknownErrorMessageDialog(String errMessage)
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, ERROR_MESSAGE + "\n" + errMessage,
+                ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
     }
 }

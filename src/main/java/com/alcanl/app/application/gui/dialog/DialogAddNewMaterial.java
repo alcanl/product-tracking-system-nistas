@@ -4,6 +4,8 @@ import com.alcanl.app.application.gui.MainForm;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.repository.entity.Material;
 import com.alcanl.app.service.ApplicationService;
+import com.alcanl.app.service.ServiceException;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
@@ -54,14 +56,19 @@ public class DialogAddNewMaterial extends JDialog {
 
     public void onOK()
     {
-        var material = getNewMaterialProps();
+        try {
+            var material = getNewMaterialProps();
 
-        if (material == null)
-            return;
+            if (material == null)
+                return;
 
-        m_ApplicationService.saveNewData(material);
-        MainForm.IS_LIST_CHANGE = true;
-        dispose();
+            m_ApplicationService.saveNewData(material);
+            MainForm.IS_LIST_CHANGE = true;
+            dispose();
+        } catch (ServiceException ex)
+        {
+            Resources.showUnknownErrorMessageDialog(ex.getMessage());
+        }
     }
 
     private void onCancel()
@@ -73,7 +80,7 @@ public class DialogAddNewMaterial extends JDialog {
         var test = textFieldName.getText();
 
         if (test.equals("")) {
-            Resources.showEmptyNameTextErrorMessage();
+            Resources.showEmptyNameTextErrorMessageDialog();
             return null;
         }
         return textFieldName.getText();
@@ -89,7 +96,7 @@ public class DialogAddNewMaterial extends JDialog {
     private BigDecimal getMaterialUnitPrice()
     {
         if (textFieldUnitPrice.getText().equals("")) {
-            Resources.showEmptyUnitPriceTextErrorMessage();
+            Resources.showEmptyUnitPriceTextErrorMessageDialog();
             return null;
         }
 

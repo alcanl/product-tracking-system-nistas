@@ -29,33 +29,21 @@ public class ApplicationService {
     }
     public List<Material> findByName(String name)
     {
-        try {
-            return materials.stream().filter(m -> m.getName().toLowerCase().contains(name.toLowerCase())).toList();
-        } catch (RepositoryException ex)
-        {
-            throw new ServiceException(ex.getCause());
-        }
+
+        return materials.stream().filter(m -> m.getName().toLowerCase().contains(name.toLowerCase())).toList();
+
     }
     public List<Material> findByLength(String length)
     {
-        try {
-            return materials.stream().filter(m -> m.getLength().isPresent())
+        return materials.stream().filter(m -> m.getLength().isPresent())
                     .filter(m -> m.getLength().get().toLowerCase().contains(length.toLowerCase())).toList();
-        } catch (RepositoryException ex)
-        {
-            throw new ServiceException(ex.getCause());
-        }
-
     }
     public List<Material> findByRadius(double radius)
     {
-        try {
-            return materials.stream().filter(m -> m.getRadius().isPresent())
+
+        return materials.stream().filter(m -> m.getRadius().isPresent())
                     .filter(m -> radius - m.getRadius().getAsDouble() < Resources.DOUBLE_THRESHOLD
                     && radius - m.getRadius().getAsDouble() >= 0).toList();
-        } catch (RepositoryException ex) {
-            throw new ServiceException(ex.getCause());
-        }
     }
     public List<Material> getDataFromDB()
     {
@@ -95,21 +83,38 @@ public class ApplicationService {
         {
             return false;
         }
+        catch (RepositoryException ex)
+        {
+            throw new ServiceException(ex.getCause());
+        }
     }
     public void updateAllDataUnitPrices(double ratio)
     {
-        DBConnector.updateAllDataUnitPrices(ratio);
-        reloadList();
+        try {
+            DBConnector.updateAllDataUnitPrices(ratio);
+            reloadList();
+        } catch (RepositoryException ex) {
+            throw new ServiceException(ex.getCause());
+        }
+
     }
     public void saveNewData(Material material)
     {
-        DBConnector.saveNewData(material);
-        reloadList();
+        try {
+            DBConnector.saveNewData(material);
+            reloadList();
+        } catch (RepositoryException ex) {
+            throw new ServiceException(ex.getCause());
+        }
     }
     public void deleteMaterial(Material material)
     {
-        var selectedMaterial = materials.stream().filter(m -> m.equals(material)).findFirst();
-        selectedMaterial.ifPresent(m -> DBConnector.deleteData(m.getId()));
-        reloadList();
+        try {
+            var selectedMaterial = materials.stream().filter(m -> m.equals(material)).findFirst();
+            selectedMaterial.ifPresent(m -> DBConnector.deleteData(m.getId()));
+            reloadList();
+        } catch (RepositoryException ex) {
+            throw new ServiceException(ex.getCause());
+        }
     }
 }

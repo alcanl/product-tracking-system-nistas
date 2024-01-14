@@ -5,6 +5,7 @@ import com.alcanl.app.application.gui.dialog.DialogAddNewMaterial;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.repository.entity.Material;
 import com.alcanl.app.service.ApplicationService;
+import com.alcanl.app.service.ServiceException;
 
 import static com.alcanl.app.global.Resources.*;
 
@@ -54,9 +55,13 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
     }
     public void deleteProductClicked()
     {
-        if (Resources.showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION) {
-            m_applicationService.deleteMaterial(m_selectedMaterial);
-            MainForm.IS_LIST_CHANGE = true;
+        try {
+            if (Resources.showEnsureWarningMessageDialog() == JOptionPane.YES_OPTION) {
+                m_applicationService.deleteMaterial(m_selectedMaterial);
+                MainForm.IS_LIST_CHANGE = true;
+            }
+        } catch (ServiceException ex) {
+            showUnknownErrorMessageDialog(ex.getMessage());
         }
 
     }

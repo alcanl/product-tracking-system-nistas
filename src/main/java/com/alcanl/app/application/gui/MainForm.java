@@ -60,7 +60,9 @@ public class MainForm extends JFrame {
     {
         try {
             m_applicationService = new ApplicationService();
-        } catch (ServiceException ignore) {}
+        } catch (ServiceException ex) {
+            showUnknownErrorMessageDialog(ex.getMessage());
+        }
 
         initializeFrame();
         initializeLogo(labelLogo);
