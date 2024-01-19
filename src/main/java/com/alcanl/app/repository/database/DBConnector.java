@@ -10,9 +10,8 @@ import java.util.List;
 
 public final class DBConnector {
     private DBConnector() {}
-    private static void selectAllQuery(ResultSet resultSet, List<Material> arrayList)
+    private static void selectAllQuery(ResultSet resultSet, List<Material> arrayList) throws SQLException
     {
-        try {
             while (resultSet.next()) {
                 var material = new Material(resultSet.getInt(COLUMN_ID),
                         resultSet.getString(COLUMN_NAME),
@@ -22,9 +21,6 @@ public final class DBConnector {
 
                 arrayList.add(material);
             }
-        } catch (SQLException ex) {
-            throw new RepositoryException(ex.getCause());
-        }
     }
     private static List<Material> runSelectAllQuery(Connection connection) throws SQLException {
 

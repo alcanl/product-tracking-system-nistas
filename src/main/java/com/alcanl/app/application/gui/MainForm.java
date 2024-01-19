@@ -8,8 +8,10 @@ import com.alcanl.app.application.gui.popup.TableItemRightClickPopUpMenu;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.global.SearchType;
 import com.alcanl.app.repository.entity.Material;
+import com.alcanl.app.repository.entity.SaleItem;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.ServiceException;
+
 import javax.swing.*;
 import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,20 +44,30 @@ public class MainForm extends JFrame {
     private JPanel panelLogo;
     private JScrollPane paneTable;
     private JButton buttonGetAllData;
-    private JList listSaleBasket;
+    private JList<SaleItem> listSaleBasket;
     private JLabel labelLogo;
-    private JButton button1;
-    private JScrollPane scrollPaneSaleBasket;
-    private JPanel panelTotal;
     private JPanel panelBasket;
     private JLabel labelTotalCount;
     private JButton buttonAddNewMaterial;
-    private JButton button3;
-    private JButton button4;
+    private JButton buttonUpdatePriceAllData;
+    private JButton buttonUpdateSelectedData;
+    private JPanel panelTotal;
+    private JLabel labelTotal;
+    private JLabel labelPrice;
+    private JLabel labelCurrency;
+    private JButton buttonPrint;
+    private JPanel panelPrint;
+    private JLabel labelMaterial;
+    private JPanel panelListHeader;
+    private JLabel labelAmount;
+    private JButton buttonClearList;
+    private JLabel labelTotalUnitPrice;
+    private JButton buttonAddProductToBasket;
     private DefaultTableModel m_defaultTableModel;
     private ApplicationService m_applicationService;
     public static volatile boolean IS_LIST_CHANGE = false;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
+    private final Vector<SaleItem> saleItemVector = new Vector<>();
 
     public MainForm()
     {
@@ -69,6 +82,7 @@ public class MainForm extends JFrame {
         initializeTable();
         initializeButtons();
         initializeTextFields();
+        initializeList();
         setVisible(true);
         startListEventListener();
     }
@@ -80,6 +94,7 @@ public class MainForm extends JFrame {
         tableProducts.getTableHeader().setResizingAllowed(false);
         tableProducts.getTableHeader().setUpdateTableInRealTime(true);
         tableProducts.setComponentPopupMenu(new TableItemRightClickPopUpMenu(m_applicationService));
+        tableProducts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fillTable(m_applicationService.getDataFromDB());
         tableProducts.addMouseListener(new MouseAdapter() {
             @Override
@@ -88,19 +103,28 @@ public class MainForm extends JFrame {
                 int currentRow = tableProducts.rowAtPoint(point);
                 tableProducts.setRowSelectionInterval(currentRow, currentRow);
 
-                if (SwingUtilities.isRightMouseButton(e))
+                if (SwingUtilities.isRightMouseButton(e) || SwingUtilities.isLeftMouseButton(e))
                 {
-                    executorService.execute(()-> {
-                        var materialName = (String) tableProducts.getValueAt(tableProducts.getSelectedRow(), 0);
-                        var materialLength = tableProducts.getValueAt(tableProducts.getSelectedRow(), 1)
-                                .equals(NO_VALUE) ? "" : (String) tableProducts.getValueAt(tableProducts.getSelectedRow(), 1);
-                        var materialRadius = (double) tableProducts.getValueAt(tableProducts.getSelectedRow(), 2);
-                        var materialPrice = (BigDecimal) tableProducts.getValueAt(tableProducts.getSelectedRow(), 3);
+                    getMaterialInfoFromTable();
+                }
 
-                        TableItemRightClickPopUpMenu.m_selectedMaterial = new Material(materialName, materialRadius, materialLength, materialPrice);
-                    });
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2)
+                {
+                    buttonAddProductToBasketClickedCallback();
                 }
             }
+        });
+    }
+    private void getMaterialInfoFromTable()
+    {
+        executorService.execute(()-> {
+            var materialName = (String) tableProducts.getValueAt(tableProducts.getSelectedRow(), 0);
+            var materialLength = tableProducts.getValueAt(tableProducts.getSelectedRow(), 1)
+                    .equals(NO_VALUE) ? "" : (String) tableProducts.getValueAt(tableProducts.getSelectedRow(), 1);
+            var materialRadius = (double) tableProducts.getValueAt(tableProducts.getSelectedRow(), 2);
+            var materialPrice = (BigDecimal) tableProducts.getValueAt(tableProducts.getSelectedRow(), 3);
+
+            TableItemRightClickPopUpMenu.m_selectedMaterial = new Material(materialName, materialRadius, materialLength, materialPrice);
         });
     }
     private void initializeFrame()
@@ -112,7 +136,7 @@ public class MainForm extends JFrame {
         setIconImage(Toolkit.getDefaultToolkit().createImage(getResource(DEFAULT_ICON)));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setMinimumSize(new Dimension(1024, 768));
+        setMinimumSize(new Dimension(1400, 800));
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -126,7 +150,11 @@ public class MainForm extends JFrame {
     }
     private void initializeList()
     {
-        //
+
+        listSaleBasket.setModel(new DefaultListModel<>());
+        listSaleBasket.setListData(saleItemVector);
+        listSaleBasket.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
     }
     private void initializeTableModel()
     {
@@ -165,6 +193,13 @@ public class MainForm extends JFrame {
         initializeTableModel();
         fillTable(m_applicationService.getDataFromDB());
     }
+    private void buttonAddProductToBasketClickedCallback()
+    {
+        var test = JOptionPane.showInputDialog(null,"Lütfen Ürün Miktarını Giriniz", 1);
+        saleItemVector.add(new SaleItem(m_applicationService.findMaterial(TableItemRightClickPopUpMenu.m_selectedMaterial),
+                        Integer.parseInt(test)));
+        listSaleBasket.updateUI();
+    }
     private void initializeButtons()
     {
         buttonGetAllData.addActionListener(e -> buttonGetAllProductClickedCallback());
@@ -172,6 +207,8 @@ public class MainForm extends JFrame {
         buttonSearchByName.addActionListener(e -> buttonSearchByNameClickedCallback());
         buttonSearchByRadius.addActionListener(e -> buttonSearchByRadiusClickedCallback());
         buttonAddNewMaterial.addActionListener(e -> buttonAddNewMaterialClickedCallBack());
+        buttonAddProductToBasket.addActionListener(e -> buttonAddProductToBasketClickedCallback());
+        buttonClearList.addActionListener(e -> {saleItemVector.clear(); listSaleBasket.updateUI();});
         setBottomBarButtonTheme(panelBottomBar);
         setButtonCursors(jPanelMain);
 
