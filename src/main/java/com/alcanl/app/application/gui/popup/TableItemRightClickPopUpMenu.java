@@ -48,7 +48,7 @@ public class TableItemRightClickPopUpMenu extends JPopupMenu implements ActionLi
 
     public void addProductToCartClicked()
     {
-
+        m_applicationService.addProductToBasket();
     }
     public void updateProductClicked()
     {

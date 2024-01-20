@@ -83,9 +83,9 @@ public class Material {
     @Override
     public String toString()
     {
-        return String.format("Ürün adı : %s\nÜrün çapı : %s\nÜrün Uzunluk: %s\nÜrün Birim Fiyat: %s\n",
+        return String.format("Ürün adı : %s / Çap : %s / Uzunluk : %s",
                 m_name, m_radius < DOUBLE_THRESHOLD ? "Çap Bilgisi Yok" : String.format("%.02f", m_radius),
-                m_length == null ? "Uzunluk Bilgisi Yok" : m_length, m_unitPrice);
+                m_length == null ? "Uzunluk Bilgisi Yok" : m_length);
     }
     @Override
     public boolean equals(Object other)

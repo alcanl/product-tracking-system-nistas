@@ -9,7 +9,7 @@ public class SaleItem{
 
     private void updateAmount(int amount)
     {
-        m_amount = amount;
+        m_amount += amount;
     }
     public SaleItem(Material material, int amount)
     {
@@ -18,7 +18,7 @@ public class SaleItem{
     }
     public void updateMaterialAmount(int amount)
     {
-        updateAmount(amount);
+        m_amount = amount;
     }
     public void increaseMaterialAmount()
     {
@@ -28,6 +28,14 @@ public class SaleItem{
     {
         updateAmount(-1);
     }
+    public void increaseMaterialAmount(int plusAmount)
+    {
+        updateAmount(plusAmount);
+    }
+    public void decreaseMaterialAmount(int subtractAmount)
+    {
+        updateAmount(-subtractAmount);
+    }
     public BigDecimal getTotalPrice()
     {
         return m_material.calculateTotalSalePrice(m_amount);
@@ -35,6 +43,19 @@ public class SaleItem{
     @Override
     public String toString()
     {
-        return String.format("%-40s %-30s %s",m_material.getName(), m_amount, getTotalPrice().setScale(2, RoundingMode.CEILING));
+        return String.format("%-70s %-10s %s",m_material, m_amount, getTotalPrice().setScale(2, RoundingMode.CEILING));
+    }
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object instanceof SaleItem saleItem)
+            return m_material.equals(saleItem.m_material);
+        else
+            return false;
+    }
+    @Override
+    public int hashCode()
+    {
+        return m_material.hashCode();
     }
 }

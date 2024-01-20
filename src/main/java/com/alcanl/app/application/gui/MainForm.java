@@ -1,10 +1,13 @@
 package com.alcanl.app.application.gui;
 
+import static com.alcanl.app.application.gui.util.print.JListPrinter.customizePageFormat;
 import static com.alcanl.app.global.Resources.*;
 import static com.google.common.io.Resources.getResource;
 
 import com.alcanl.app.application.gui.dialog.DialogAddNewMaterial;
+import com.alcanl.app.application.gui.dialog.DialogUpdateMaterial;
 import com.alcanl.app.application.gui.popup.TableItemRightClickPopUpMenu;
+import com.alcanl.app.application.gui.util.print.JListPrinter;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.global.SearchType;
 import com.alcanl.app.repository.entity.Material;
@@ -12,16 +15,19 @@ import com.alcanl.app.repository.entity.SaleItem;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.ServiceException;
 
+import javax.print.attribute.standard.PrinterInfo;
 import javax.swing.*;
 import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -67,12 +73,13 @@ public class MainForm extends JFrame {
     private ApplicationService m_applicationService;
     public static volatile boolean IS_LIST_CHANGE = false;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
-    private final Vector<SaleItem> saleItemVector = new Vector<>();
 
     public MainForm()
     {
         try {
             m_applicationService = new ApplicationService();
+            m_applicationService.setFormList(listSaleBasket);
+            m_applicationService.setFormPriceLabel(labelPrice);
         } catch (ServiceException ex) {
             showUnknownErrorMessageDialog(ex.getMessage());
         }
@@ -150,11 +157,9 @@ public class MainForm extends JFrame {
     }
     private void initializeList()
     {
-
         listSaleBasket.setModel(new DefaultListModel<>());
-        listSaleBasket.setListData(saleItemVector);
+        listSaleBasket.setListData(m_applicationService.getSaleItemVector());
         listSaleBasket.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
     }
     private void initializeTableModel()
     {
@@ -195,10 +200,7 @@ public class MainForm extends JFrame {
     }
     private void buttonAddProductToBasketClickedCallback()
     {
-        var test = JOptionPane.showInputDialog(null,"Lütfen Ürün Miktarını Giriniz", 1);
-        saleItemVector.add(new SaleItem(m_applicationService.findMaterial(TableItemRightClickPopUpMenu.m_selectedMaterial),
-                        Integer.parseInt(test)));
-        listSaleBasket.updateUI();
+        m_applicationService.addProductToBasket();
     }
     private void initializeButtons()
     {
@@ -208,10 +210,53 @@ public class MainForm extends JFrame {
         buttonSearchByRadius.addActionListener(e -> buttonSearchByRadiusClickedCallback());
         buttonAddNewMaterial.addActionListener(e -> buttonAddNewMaterialClickedCallBack());
         buttonAddProductToBasket.addActionListener(e -> buttonAddProductToBasketClickedCallback());
-        buttonClearList.addActionListener(e -> {saleItemVector.clear(); listSaleBasket.updateUI();});
+        buttonUpdateSelectedData.addActionListener(e -> updateSelectedMaterialClickedCallback());
+        buttonPrint.addActionListener(e -> buttonPrintClickedCallback());
+        buttonClearList.addActionListener(e -> {m_applicationService.getSaleItemVector().clear();
+            listSaleBasket.updateUI(); labelPrice.setText("0.0");});
+        buttonUpdatePriceAllData.addActionListener(e -> {
+            var ratio = showUpdatePriceRatioInputDialog();
+            if (ratio + 1D <= DOUBLE_THRESHOLD)
+                return;
+
+            m_applicationService.updateAllDataUnitPrices(ratio);
+                });
+
+
         setBottomBarButtonTheme(panelBottomBar);
         setButtonCursors(jPanelMain);
 
+    }
+    private void buttonPrintClickedCallback()
+    {
+        if (m_applicationService.getSaleItemVector().isEmpty()) {
+            showEmptyListWarningMessageDialog();
+            return;
+        }
+
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.setPrintable(new JListPrinter(listSaleBasket.getModel()));
+        PageFormat pageFormat = job.defaultPage();
+        job.setPrintable(new JListPrinter(listSaleBasket.getModel()), customizePageFormat(pageFormat));
+
+        if (job.printDialog()) {
+            try {
+                job.print();
+            } catch (PrinterException ex) {
+                showUnknownErrorMessageDialog(ex.getMessage());
+            }
+        }
+    }
+    private void updateSelectedMaterialClickedCallback()
+    {
+        if (TableItemRightClickPopUpMenu.m_selectedMaterial == null) {
+            showNoSelectedMaterialMessage();
+            return;
+        }
+        var updateMaterialDialog = new DialogUpdateMaterial(m_applicationService);
+        updateMaterialDialog.pack();
+        updateMaterialDialog.setLocationRelativeTo(null);
+        updateMaterialDialog.setVisible(true);
     }
     private void initializeTextFields()
     {
@@ -244,6 +289,10 @@ public class MainForm extends JFrame {
     private void doCommonButtonWorks(JTextField textField, SearchType searchType)
     {
         var searchText = textField.getText().trim();
+
+        if (searchText.isEmpty())
+            return;
+
         textField.setText("");
 
         try {
@@ -306,7 +355,7 @@ public class MainForm extends JFrame {
             while (true) {
                 if (IS_LIST_CHANGE) {
                     try {
-                        Thread.sleep(700);
+                        Thread.sleep(500);
                     } catch (InterruptedException ignore) {
 
                     }

@@ -47,6 +47,9 @@ public final class Resources {
     public static final String TOTAL_TABLE_COUNT = "Toplam Ürün Sayısı : %d";
     private static final String ERROR_MESSAGE_EMPTY_NAME = "Ürün isim bilgisi boş bırakılamaz";
     private static final String ERROR_MESSAGE_EMPTY_UNIT_PRICE = "Ürün birim fiyat bilgisi boş bırakılamaz";
+    private static final String DIALOG_AMOUNT_INPUT_TEXT = "Lütfen Ürün Miktarını Giriniz : ";
+    private static final String DIALOG_RATIO_INPUT_TEXT = "Lütfen Tüm Ürünlere Uygulanacak Zam Oranını Giriniz : ";
+    private static final String WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT = "Seçili Ürün Bulunmamaktadır.";
     private static final String WARNING_MESSAGE_DELETE_ITEM = "Seçili ürünü silmek üzeresiniz. Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?";
 
     private Resources() {}
@@ -75,6 +78,7 @@ public final class Resources {
     {
         UIManager.put("OptionPane.okButtonText", "Tamam");
     }
+    private static void setCancelButtonTR() {UIManager.put("OptionPane.cancelButtonText", "İptal");}
     private static void setYesNoButtonTR()
     {
         UIManager.put("OptionPane.yesButtonText", "Evet");
@@ -114,5 +118,52 @@ public final class Resources {
         setOkButtonTR();
         JOptionPane.showMessageDialog(null, ERROR_MESSAGE + "\n" + errMessage,
                 ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+    }
+    public static int showAmountInputDialog()
+    {
+        setOkButtonTR();
+        setCancelButtonTR();
+        var amount = JOptionPane.showInputDialog(null,DIALOG_AMOUNT_INPUT_TEXT, 1);
+
+        try {
+            var amountInt = Integer.parseInt(amount);
+            if (amountInt <= 0) {
+                showUnsupportedFormatWarningMessageDialog();
+                return -1;
+            }
+            else
+                return amountInt;
+        } catch (NumberFormatException ignore) {
+            showUnsupportedFormatWarningMessageDialog();
+            return -1;
+        }
+    }
+    public static double showUpdatePriceRatioInputDialog()
+    {
+        setOkButtonTR();
+        setCancelButtonTR();
+
+        var ratio = JOptionPane.showInputDialog(null, DIALOG_RATIO_INPUT_TEXT);
+
+        try {
+            var ratioDouble = Double.parseDouble(ratio);
+            if (ratioDouble <= DOUBLE_THRESHOLD) {
+                showUnsupportedFormatWarningMessageDialog();
+                return -1D;
+            }
+            else
+                return ratioDouble;
+
+        } catch (NumberFormatException ignore)
+        {
+            showUnsupportedFormatWarningMessageDialog();
+            return -1D;
+        }
+    }
+    public static void showNoSelectedMaterialMessage()
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT, WARNING_TITLE,
+                JOptionPane.WARNING_MESSAGE);
     }
 }
