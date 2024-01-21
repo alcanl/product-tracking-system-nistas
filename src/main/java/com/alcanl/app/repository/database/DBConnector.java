@@ -138,4 +138,8 @@ public final class DBConnector {
     {
         updateDoubleData(0, UPDATE_ALL_UNIT_PRICES, ratio);
     }
+    public static void updateSingleDataUnitPriceByRatio(int id, double ratio)
+    {
+        updateDoubleData(id, UPDATE_SELECTED_ITEM_UNIT_PRICE_BY_RATIO, ratio);
+    }
 }

@@ -98,6 +98,17 @@ public class ApplicationService {
         }
 
     }
+    public void updateMaterialUnitPriceByRatio(Material material, double ratio)
+    {
+        var materialDB = findMaterial(material);
+        try {
+            updateSingleDataUnitPriceByRatio(materialDB.getId(), ratio);
+            reloadList();
+        }
+        catch (RepositoryException ex) {
+            throw new ServiceException(ex.getCause());
+        }
+    }
     public void saveNewData(Material material)
     {
         try {

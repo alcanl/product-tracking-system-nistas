@@ -111,4 +111,36 @@ public final class DialogHelper {
         MainForm.IS_LIST_CHANGE = true;
 
     }
+    private static double getUpdateRatio(JTextField textField)
+    {
+        var ratioStr = textField.getText().trim();
+
+        if (ratioStr.isEmpty()) {
+            Resources.showUnsupportedFormatWarningMessageDialog();
+            return -1D;
+        }
+        try {
+            return Double.parseDouble(ratioStr);
+        } catch (NumberFormatException ignore) {
+            Resources.showUnsupportedFormatWarningMessageDialog();
+            return -1D;
+        }
+    }
+    public static void updateSingleItemUnitPriceByRatio(ApplicationService applicationService, JTextField textField)
+    {
+        var ratio = getUpdateRatio(textField);
+        if (ratio + 1D < Resources.DOUBLE_THRESHOLD) {
+            Resources.showUnsupportedFormatWarningMessageDialog();
+            return;
+        }
+
+        try {
+            if (Resources.showSingleMaterialUpdatePriceByRatioMessage(ratio) == JOptionPane.YES_OPTION) {
+                applicationService.updateMaterialUnitPriceByRatio(TableItemRightClickPopUpMenu.m_selectedMaterial, ratio);
+                MainForm.IS_LIST_CHANGE = true;
+            }
+        } catch (ServiceException ex) {
+            Resources.showUnknownErrorMessageDialog(ex.getMessage());
+        }
+    }
 }

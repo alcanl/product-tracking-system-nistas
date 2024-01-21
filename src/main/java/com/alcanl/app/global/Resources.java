@@ -24,8 +24,8 @@ public final class Resources {
     public static final String UPDATE_COLUMN_RADIUS = "UPDATE material_info SET material_radius=? WHERE material_id=?";
     public static final String UPDATE_COLUMN_LENGTH = "UPDATE material_info SET material_length=? WHERE material_id=?";
     public static final String UPDATE_COLUMN_UNIT_PRICE = "UPDATE material_info SET material_unit_price=? WHERE material_id=?";
-    public static final String UPDATE_ALL_UNIT_PRICES = "UPDATE material_info SET material_unit_price = (material_unit_price * ?)";
-    public static final String UPDATE_SELECTED_ITEM_UNIT_PRICE_BY_RATIO = "UPDATE material_info SET material_unit_price = (material_unit_price * ?) WHERE material_id=?";
+    public static final String UPDATE_ALL_UNIT_PRICES = "UPDATE material_info SET material_unit_price = (material_unit_price + (material_unit_price * ? / 100))";
+    public static final String UPDATE_SELECTED_ITEM_UNIT_PRICE_BY_RATIO = "UPDATE material_info SET material_unit_price = (material_unit_price + (material_unit_price * ? / 100)) WHERE material_id=?";
     public static final String COMPANY_NAME = "Nistaş Yapı Malzemeleri";
     public static final String TABLE_COLUMN_HEADER_NAME = "Ürün Adı";
     public static final String TABLE_COLUMN_HEADER_LENGTH = "Ürün Uzunluk";
@@ -52,6 +52,8 @@ public final class Resources {
     private static final String DIALOG_RATIO_INPUT_TEXT = "Lütfen Tüm Ürünlere Uygulanacak Zam Oranını Giriniz : ";
     private static final String WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT = "Seçili Ürün Bulunmamaktadır.";
     private static final String WARNING_MESSAGE_DELETE_ITEM = "Seçili ürünü silmek üzeresiniz. Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?";
+    private static final String WARNING_UPDATE_RATIO_TEXT = "Tüm Ürünlere %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
+    private static final String WARNING_UPDATE_SINGLE__RATIO_TEXT = "Seçili Ürüne %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
 
     private Resources() {}
     public static void setLayout(String theme) {
@@ -125,7 +127,8 @@ public final class Resources {
         setOkButtonTR();
         setCancelButtonTR();
         var amount = JOptionPane.showInputDialog(null,DIALOG_AMOUNT_INPUT_TEXT, 1);
-
+        if (amount == null)
+            return -1;
         try {
             var amountInt = Integer.parseInt(amount);
             if (amountInt <= 0) {
@@ -145,6 +148,9 @@ public final class Resources {
         setCancelButtonTR();
 
         var ratio = JOptionPane.showInputDialog(null, DIALOG_RATIO_INPUT_TEXT);
+
+        if (ratio == null)
+            return -1D;
 
         try {
             var ratioDouble = Double.parseDouble(ratio);
@@ -167,4 +173,18 @@ public final class Resources {
         JOptionPane.showMessageDialog(null, WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT, WARNING_TITLE,
                 JOptionPane.WARNING_MESSAGE);
     }
+    public static int showUpdatePriceByRatioMessage(double ratio)
+    {
+        setYesNoButtonTR();
+        return JOptionPane.showConfirmDialog(null,
+                String.format(WARNING_UPDATE_RATIO_TEXT, ratio), WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+    }
+    public static int showSingleMaterialUpdatePriceByRatioMessage(double ratio)
+    {
+
+        setYesNoButtonTR();
+        return JOptionPane.showConfirmDialog(null,
+                String.format(WARNING_UPDATE_SINGLE__RATIO_TEXT, ratio), WARNING_TITLE, JOptionPane.YES_NO_OPTION);
+    }
+
 }

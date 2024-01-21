@@ -231,13 +231,15 @@ public class MainForm extends JFrame {
             listSaleBasket.updateUI(); labelPrice.setText("0.0");});
         buttonUpdatePriceAllData.addActionListener(e -> {
             var ratio = showUpdatePriceRatioInputDialog();
+
             if (ratio + 1D <= DOUBLE_THRESHOLD)
                 return;
-
-            m_applicationService.updateAllDataUnitPrices(ratio);
-                });
-
-
+            if (Resources.showUpdatePriceByRatioMessage(ratio) == JOptionPane.YES_OPTION) {
+                m_applicationService.updateAllDataUnitPrices(ratio);
+                IS_LIST_CHANGE = true;
+            }
+        });
+        
         setBottomBarButtonTheme(panelBottomBar);
         setButtonCursors(jPanelMain);
 

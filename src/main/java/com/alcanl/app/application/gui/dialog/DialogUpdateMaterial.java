@@ -4,6 +4,7 @@ import com.alcanl.app.application.gui.popup.TableItemRightClickPopUpMenu;
 import com.alcanl.app.service.ApplicationService;
 import javax.swing.*;
 import java.awt.event.*;
+
 @SuppressWarnings("ALL")
 public class DialogUpdateMaterial extends JDialog {
     private JPanel contentPane;
@@ -25,6 +26,8 @@ public class DialogUpdateMaterial extends JDialog {
     private JLabel labelLength;
     private JLabel labelRadius;
     private JLabel labelUnitPrice;
+    private JCheckBox checkBoxRatio;
+    private JTextField textFieldRatio;
     private final ApplicationService m_applicationService;
 
     public DialogUpdateMaterial(ApplicationService applicationService)
@@ -39,6 +42,7 @@ public class DialogUpdateMaterial extends JDialog {
 
         buttonSave.addActionListener(e -> onOK());
         buttonCancel.addActionListener(e -> onCancel());
+        checkBoxRatio.addActionListener(e -> checkBoxChanged());
         initializeTexFields();
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -50,6 +54,23 @@ public class DialogUpdateMaterial extends JDialog {
 
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
+    private void checkBoxChanged()
+    {
+        if (checkBoxRatio.isSelected()) {
+            textFieldRatio.setEnabled(true);
+            textFieldUnitPrice.setEnabled(false);
+            textFieldName.setEnabled(false);
+            textFieldLength.setEnabled(false);
+            textFieldRadius.setEnabled(false);
+        }
+        else {
+            textFieldRatio.setEnabled(false);
+            textFieldUnitPrice.setEnabled(true);
+            textFieldLength.setEnabled(true);
+            textFieldName.setEnabled(true);
+            textFieldRadius.setEnabled(true);
+        }
+    }
     private void initializeTexFields()
     {
         DialogHelper.setTextFields(textFieldName, textFieldLength, textFieldRadius, textFieldUnitPrice,
@@ -58,14 +79,20 @@ public class DialogUpdateMaterial extends JDialog {
 
     private void onOK()
     {
-        var material = DialogHelper.getNewMaterialProps(textFieldName, textFieldLength,
-                textFieldRadius, textFieldUnitPrice);
+        if (!checkBoxRatio.isSelected()) {
+            var material = DialogHelper.getNewMaterialProps(textFieldName, textFieldLength,
+                    textFieldRadius, textFieldUnitPrice);
 
-        if (material == null)
-            return;
+            if (material == null)
+                return;
 
-        DialogHelper.updateData(material, m_applicationService);
-        dispose();
+            DialogHelper.updateData(material, m_applicationService);
+            dispose();
+        }
+        else {
+            DialogHelper.updateSingleItemUnitPriceByRatio(m_applicationService, textFieldRatio);
+            dispose();
+        }
     }
 
     private void onCancel()
