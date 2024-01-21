@@ -43,6 +43,7 @@ public final class Resources {
     public static final String ADD_PRODUCT_TO_SALE_CART = "Sepete Ekle";
     public static final String UPDATE_SELECTED_PRODUCT = "Düzenle";
     public static final String DELETE_SELECTED_PRODUCT = "Sil";
+    public static final String UPDATE_SELECTED_ITEM_AMOUNT = "Adet Güncelle";
     public static final String ADD_NEW_PRODUCT = "Yeni Ürün Ekle";
     public static final String TOTAL_TABLE_COUNT = "Toplam Ürün Sayısı : %d";
     private static final String ERROR_MESSAGE_EMPTY_NAME = "Ürün isim bilgisi boş bırakılamaz";

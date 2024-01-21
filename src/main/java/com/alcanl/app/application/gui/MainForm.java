@@ -6,6 +6,7 @@ import static com.google.common.io.Resources.getResource;
 
 import com.alcanl.app.application.gui.dialog.DialogAddNewMaterial;
 import com.alcanl.app.application.gui.dialog.DialogUpdateMaterial;
+import com.alcanl.app.application.gui.popup.ListItemRightClickPopUpMenu;
 import com.alcanl.app.application.gui.popup.TableItemRightClickPopUpMenu;
 import com.alcanl.app.application.gui.util.print.JListPrinter;
 import com.alcanl.app.global.Resources;
@@ -14,8 +15,6 @@ import com.alcanl.app.repository.entity.Material;
 import com.alcanl.app.repository.entity.SaleItem;
 import com.alcanl.app.service.ApplicationService;
 import com.alcanl.app.service.ServiceException;
-
-import javax.print.attribute.standard.PrinterInfo;
 import javax.swing.*;
 import javax.swing.plaf.synth.SynthTableUI;
 import javax.swing.table.DefaultTableModel;
@@ -160,6 +159,22 @@ public class MainForm extends JFrame {
         listSaleBasket.setModel(new DefaultListModel<>());
         listSaleBasket.setListData(m_applicationService.getSaleItemVector());
         listSaleBasket.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listSaleBasket.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+                if (!m_applicationService.getSaleItemVector().isEmpty() && SwingUtilities.isRightMouseButton(e)
+                        || SwingUtilities.isLeftMouseButton(e)) {
+                    Point point = e.getPoint();
+                    int selectedIndex = listSaleBasket.locationToIndex(point);
+                    listSaleBasket.setSelectedIndex(selectedIndex);
+                    ListItemRightClickPopUpMenu.m_selectedSaleItem = listSaleBasket.getSelectedValue();
+                    listSaleBasket.setComponentPopupMenu(new ListItemRightClickPopUpMenu(m_applicationService));
+                }
+                else
+                    listSaleBasket.setComponentPopupMenu(null);
+            }
+        });
     }
     private void initializeTableModel()
     {
@@ -235,9 +250,9 @@ public class MainForm extends JFrame {
         }
 
         PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPrintable(new JListPrinter(listSaleBasket.getModel()));
+        job.setPrintable(new JListPrinter(listSaleBasket.getModel(), labelPrice));
         PageFormat pageFormat = job.defaultPage();
-        job.setPrintable(new JListPrinter(listSaleBasket.getModel()), customizePageFormat(pageFormat));
+        job.setPrintable(new JListPrinter(listSaleBasket.getModel(), labelPrice), customizePageFormat(pageFormat));
 
         if (job.printDialog()) {
             try {

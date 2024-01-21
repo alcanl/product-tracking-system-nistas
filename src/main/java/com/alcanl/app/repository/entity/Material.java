@@ -2,7 +2,6 @@ package com.alcanl.app.repository.entity;
 
 import static com.alcanl.app.global.Resources.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -83,9 +82,9 @@ public class Material {
     @Override
     public String toString()
     {
-        return String.format("Ürün adı : %s / Çap : %s / Uzunluk : %s",
-                m_name, m_radius < DOUBLE_THRESHOLD ? "Çap Bilgisi Yok" : String.format("%.02f", m_radius),
-                m_length == null ? "Uzunluk Bilgisi Yok" : m_length);
+        return String.format("%s / Çap : %s / Uzunluk : %s",
+                m_name, m_radius < DOUBLE_THRESHOLD ? "Bilgi Yok" : String.format("%.02f", m_radius),
+                m_length == null ? "Bilgi Yok" : m_length);
     }
     @Override
     public boolean equals(Object other)

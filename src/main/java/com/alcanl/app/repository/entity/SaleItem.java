@@ -43,7 +43,7 @@ public class SaleItem{
     @Override
     public String toString()
     {
-        return String.format("%-70s %-10s %s",m_material, m_amount, getTotalPrice().setScale(2, RoundingMode.CEILING));
+        return String.format("%-85s %-10s %s",m_material, m_amount, getTotalPrice().setScale(2, RoundingMode.CEILING));
     }
     @Override
     public boolean equals(Object object)

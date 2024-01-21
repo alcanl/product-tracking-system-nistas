@@ -125,6 +125,17 @@ public class ApplicationService {
     {
         m_saleItemVector.stream().filter(s -> s.equals(saleItem))
                 .findFirst().ifPresent(s -> s.increaseMaterialAmount(amount));
+
+        m_formList.updateUI();
+        m_formTotalPriceLabel.setText(getSaleItemTotalPrice());
+    }
+    public void refreshSaleItemAmount(SaleItem saleItem, int amount)
+    {
+        m_saleItemVector.stream().filter(s -> s.equals(saleItem))
+                .findFirst().ifPresent(s -> s.updateMaterialAmount(amount));
+
+        m_formList.updateUI();
+        m_formTotalPriceLabel.setText(getSaleItemTotalPrice());
     }
     public boolean isInBasket(SaleItem saleItem)
     {
@@ -147,12 +158,6 @@ public class ApplicationService {
                 .setScale(2, RoundingMode.CEILING)
                 .toString();
     }
-    private void addProductToBasketWhileContains(SaleItem saleItem, int amount)
-    {
-        changeSaleItemAmount(saleItem, amount);
-        m_formList.updateUI();
-        m_formTotalPriceLabel.setText(getSaleItemTotalPrice());
-    }
     public void addProductToBasket()
     {
         var material = TableItemRightClickPopUpMenu.m_selectedMaterial;
@@ -166,11 +171,19 @@ public class ApplicationService {
             return;
 
         var saleItem = new SaleItem(findMaterial(material), amount);
+
         if (isInBasket(saleItem)) {
-            addProductToBasketWhileContains(saleItem, amount);
+            changeSaleItemAmount(saleItem, amount);
             return;
         }
 
         addToBasket(saleItem);
+    }
+    public void deleteItemFromBasket(SaleItem saleItem)
+    {
+        m_saleItemVector.remove(saleItem);
+        m_formList.updateUI();
+        m_formTotalPriceLabel.setText(getSaleItemTotalPrice());
+
     }
 }
