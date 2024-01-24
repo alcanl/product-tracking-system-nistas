@@ -11,7 +11,7 @@ public final class Resources {
     public static final double TAX = 0.2;
     public static final double PROFIT = 0.35;
     public static final String SELECT_ALL_DATA = "SELECT material_id, material_name, material_radius, material_length, material_unit_price FROM material_info";
-    public static final String DB_URL = "jdbc:sqlite:./materials.db";
+    public static final String DB_URL = "jdbc:sqlite::resource:materials.db";
     public static final String COLUMN_ID = "material_id";
     public static final String COLUMN_NAME = "material_name";
     public static final String COLUMN_RADIUS = "material_radius";
@@ -54,6 +54,7 @@ public final class Resources {
     private static final String WARNING_MESSAGE_DELETE_ITEM = "Seçili ürünü silmek üzeresiniz. Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?";
     private static final String WARNING_UPDATE_RATIO_TEXT = "Tüm Ürünlere %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
     private static final String WARNING_UPDATE_SINGLE__RATIO_TEXT = "Seçili Ürüne %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
+    private static final String WARNING_EMPTY_CART_MESSAGE = "Sepette Ürün Bulunmamaktadır.";
 
     private Resources() {}
     public static void setLayout(String theme) {
@@ -187,4 +188,9 @@ public final class Resources {
                 String.format(WARNING_UPDATE_SINGLE__RATIO_TEXT, ratio), WARNING_TITLE, JOptionPane.YES_NO_OPTION);
     }
 
+    public static void showWarningEmptyCartMessage()
+    {
+        setOkButtonTR();
+        JOptionPane.showMessageDialog(null, WARNING_EMPTY_CART_MESSAGE, WARNING_TITLE, JOptionPane.INFORMATION_MESSAGE);
+    }
 }

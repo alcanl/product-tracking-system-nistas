@@ -36,6 +36,14 @@ public class SaleItem{
     {
         updateAmount(-subtractAmount);
     }
+    public String getName()
+    {
+        return m_material.toString();
+    }
+    public int getAmount()
+    {
+        return m_amount;
+    }
     public BigDecimal getTotalPrice()
     {
         return m_material.calculateTotalSalePrice(m_amount);
@@ -43,7 +51,7 @@ public class SaleItem{
     @Override
     public String toString()
     {
-        return String.format("%-85s %-10s %s",m_material, m_amount, getTotalPrice().setScale(2, RoundingMode.CEILING));
+        return String.format("%-37s %s Adet %12s TL",m_material, m_amount, getTotalPrice().setScale(2, RoundingMode.CEILING));
     }
     @Override
     public boolean equals(Object object)

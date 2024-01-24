@@ -82,9 +82,15 @@ public class Material {
     @Override
     public String toString()
     {
-        return String.format("%s / Çap : %s / Uzunluk : %s",
-                m_name, m_radius < DOUBLE_THRESHOLD ? "Bilgi Yok" : String.format("%.02f", m_radius),
-                m_length == null ? "Bilgi Yok" : m_length);
+        var sb = new StringBuilder();
+        sb.append(m_name);
+        if (m_radius > DOUBLE_THRESHOLD)
+            sb.append(" | ").append(m_radius);
+
+        if (!m_length.isEmpty())
+            sb.append(" | ").append(m_length);
+
+        return sb.toString();
     }
     @Override
     public boolean equals(Object other)

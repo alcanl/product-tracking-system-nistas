@@ -5,6 +5,7 @@ import com.alcanl.app.repository.entity.SaleItem;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.*;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -49,7 +50,11 @@ public class JListPrinter implements Printable {
         g2d.drawRect(listX, listY, (int)pf.getImageableWidth(), m_listModel.getSize() * 24);
 
         for (int i = 0; i < m_listModel.getSize(); i++) {
-            g2d.drawString((i + 1) + "- " + m_listModel.getElementAt(i).toString(), listX + 20, listY + 20 * (i + 1));
+            g2d.drawString((i + 1) + "- " + m_listModel.getElementAt(i).getName(), listX + 20, listY + 20 * (i + 1));
+            g2d.drawString(String.format("%d", m_listModel.getElementAt(i).getAmount()),
+                    (int)pf.getImageableWidth() - 100, listY + 20 * (i + 1));
+            g2d.drawString( m_listModel.getElementAt(i).getTotalPrice().setScale(2, RoundingMode.CEILING).toString(),
+                    (int)pf.getImageableWidth() - 35, listY + 20 * (i + 1));
         }
 
         g2d.drawString(String.format("Toplam Tutar : %s TL", m_labelPrice.getText()),
@@ -57,7 +62,7 @@ public class JListPrinter implements Printable {
     }
     private void drawHeader(Graphics2D g2d, PageFormat pf)
     {
-        ImageIcon icon = new ImageIcon(getResource("logoPrint.png").getPath());
+        ImageIcon icon = new ImageIcon(getResource("logo_print.jpg").getPath());
         g2d.drawImage(icon.getImage(), 20, 20, icon.getImageObserver());
         var now = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now());
         g2d.drawString(now, (int)pf.getImageableWidth() - 50, 50);

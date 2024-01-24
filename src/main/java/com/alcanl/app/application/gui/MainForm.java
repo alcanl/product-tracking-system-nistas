@@ -64,7 +64,6 @@ public class MainForm extends JFrame {
     private JPanel panelPrint;
     private JLabel labelMaterial;
     private JPanel panelListHeader;
-    private JLabel labelAmount;
     private JButton buttonClearList;
     private JLabel labelTotalUnitPrice;
     private JButton buttonAddProductToBasket;
@@ -75,22 +74,22 @@ public class MainForm extends JFrame {
 
     public MainForm()
     {
+        initializeFrame();
         try {
             m_applicationService = new ApplicationService();
             m_applicationService.setFormList(listSaleBasket);
             m_applicationService.setFormPriceLabel(labelPrice);
+            initializeLogo(labelLogo);
+            initializeTable();
+            initializeButtons();
+            initializeTextFields();
+            initializeList();
+            setVisible(true);
+            startListEventListener();
         } catch (ServiceException ex) {
             showUnknownErrorMessageDialog(ex.getMessage());
         }
 
-        initializeFrame();
-        initializeLogo(labelLogo);
-        initializeTable();
-        initializeButtons();
-        initializeTextFields();
-        initializeList();
-        setVisible(true);
-        startListEventListener();
     }
     private void initializeTable()
     {
@@ -136,7 +135,7 @@ public class MainForm extends JFrame {
     private void initializeFrame()
     {
         Resources.setLayout(NIMBUS_THEME);
-        add(jPanelMain);
+        setContentPane(jPanelMain);
         setSize(1400, 800);
         setTitle(COMPANY_NAME);
         setIconImage(Toolkit.getDefaultToolkit().createImage(getResource(DEFAULT_ICON)));
@@ -210,8 +209,13 @@ public class MainForm extends JFrame {
     }
     private void buttonGetAllProductClickedCallback()
     {
-        initializeTableModel();
-        fillTable(m_applicationService.getDataFromDB());
+        try {
+            initializeTableModel();
+            fillTable(m_applicationService.getDataFromDB());
+        } catch (ServiceException ex) {
+            showUnknownErrorMessageDialog(ex.getMessage());
+        }
+
     }
     private void buttonAddProductToBasketClickedCallback()
     {
@@ -228,7 +232,7 @@ public class MainForm extends JFrame {
         buttonUpdateSelectedData.addActionListener(e -> updateSelectedMaterialClickedCallback());
         buttonPrint.addActionListener(e -> buttonPrintClickedCallback());
         buttonClearList.addActionListener(e -> {m_applicationService.getSaleItemVector().clear();
-            listSaleBasket.updateUI(); labelPrice.setText("0.0");});
+            listSaleBasket.updateUI(); labelPrice.setText("0.00");});
         buttonUpdatePriceAllData.addActionListener(e -> {
             var ratio = showUpdatePriceRatioInputDialog();
 
@@ -247,7 +251,7 @@ public class MainForm extends JFrame {
     private void buttonPrintClickedCallback()
     {
         if (m_applicationService.getSaleItemVector().isEmpty()) {
-            showEmptyListWarningMessageDialog();
+            showWarningEmptyCartMessage();
             return;
         }
 
@@ -322,7 +326,7 @@ public class MainForm extends JFrame {
             initializeTableModel();
             fillTable(list);
 
-        } catch (NumberFormatException ex)
+        } catch (NumberFormatException | ServiceException ex)
         {
             showUnsupportedFormatWarningMessageDialog();
         }

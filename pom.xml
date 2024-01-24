@@ -17,18 +17,6 @@
     <name>Nistas</name>
     <description>Product Tracking Application</description>
 
-    <repositories>
-
-        <repository>
-            <id>javaapp1-mar-2023-maven-repo</id>
-            <url>https://raw.github.com/oguzkaran/javaapp1-mar-2023-maven-repo/main</url>
-        </repository>
-
-        <repository>
-            <id>javaapp1-mar-2023-karandev-maven-repo</id>
-            <url>https://raw.github.com/oguzkaran/javaapp1-mar-2023-karandev-maven-repo/main</url>
-        </repository>
-    </repositories>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
