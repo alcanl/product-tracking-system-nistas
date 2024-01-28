@@ -53,9 +53,11 @@ public final class Resources {
     private static final String DIALOG_RATIO_INPUT_TEXT = "Lütfen Tüm Ürünlere Uygulanacak Zam Oranını Giriniz : ";
     private static final String WARNING_MESSAGE_NO_SELECTED_ITEM_TEXT = "Seçili Ürün Bulunmamaktadır.";
     private static final String WARNING_MESSAGE_DELETE_ITEM = "Seçili ürünü silmek üzeresiniz. Bu işlem geri alınamaz. Devam etmek istediğinize emin misiniz?";
-    private static final String WARNING_UPDATE_RATIO_TEXT = "Tüm Ürünlere %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
+    private static final String WARNING_UPDATE_RATIO_TEXT = "Tüm Boru Tipi Ürünlere %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
     private static final String WARNING_UPDATE_SINGLE__RATIO_TEXT = "Seçili Ürüne %%%.02f Zam Uygulanacak. Onaylıyor musunuz?";
     private static final String WARNING_EMPTY_CART_MESSAGE = "Sepette Ürün Bulunmamaktadır.";
+    private static final String AMOUNT_TITLE = "Adet Bilgisi";
+    private static final String RATIO_TITLE = "Artış Oran Bilgisi";
 
     private Resources() {}
     public static void setLayout(String theme) {
@@ -128,11 +130,12 @@ public final class Resources {
     {
         setOkButtonTR();
         setCancelButtonTR();
-        var amount = JOptionPane.showInputDialog(null,DIALOG_AMOUNT_INPUT_TEXT, 1);
+        var amount = JOptionPane.showInputDialog(null,DIALOG_AMOUNT_INPUT_TEXT, AMOUNT_TITLE,
+                JOptionPane.PLAIN_MESSAGE, null, null, 1);
         if (amount == null)
             return -1;
         try {
-            var amountInt = Integer.parseInt(amount);
+            var amountInt = Integer.parseInt((String)amount);
             if (amountInt <= 0) {
                 showUnsupportedFormatWarningMessageDialog();
                 return -1;
@@ -149,7 +152,8 @@ public final class Resources {
         setOkButtonTR();
         setCancelButtonTR();
 
-        var ratio = JOptionPane.showInputDialog(null, DIALOG_RATIO_INPUT_TEXT);
+        var ratio = JOptionPane.showInputDialog(null, DIALOG_RATIO_INPUT_TEXT,
+                RATIO_TITLE, JOptionPane.PLAIN_MESSAGE);
 
         if (ratio == null)
             return -1D;
