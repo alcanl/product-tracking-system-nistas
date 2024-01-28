@@ -17,7 +17,8 @@ public final class DBConnector {
                         resultSet.getString(COLUMN_NAME),
                         resultSet.getDouble(COLUMN_RADIUS),
                         resultSet.getString(COLUMN_LENGTH),
-                        resultSet.getDouble(COLUMN_UNIT_PRICE));
+                        resultSet.getDouble(COLUMN_UNIT_PRICE),
+                        resultSet.getBoolean(COLUMN_IS_PIPE_TYPE));
 
                 arrayList.add(material);
             }
@@ -108,6 +109,7 @@ public final class DBConnector {
             statement.setDouble(2, material.getRadius().orElse(0.0));
             statement.setString(3, material.getLength().orElse(null));
             statement.setDouble(4, material.getUnitPrice().doubleValue());
+            statement.setBoolean(5, material.getIsPipeType());
 
             statement.executeUpdate();
 
@@ -134,9 +136,9 @@ public final class DBConnector {
         updateDoubleData(id, UPDATE_COLUMN_UNIT_PRICE, newUnitPrice);
     }
     //increases all data prices as ratio value
-    public static void updateAllDataUnitPrices(double ratio)
+    public static void updateAllPipeTypeDataUnitPrices(double ratio)
     {
-        updateDoubleData(0, UPDATE_ALL_UNIT_PRICES, ratio);
+        updateDoubleData(0, UPDATE_ALL_PIPE_TYPE_UNIT_PRICES, ratio);
     }
     public static void updateSingleDataUnitPriceByRatio(int id, double ratio)
     {

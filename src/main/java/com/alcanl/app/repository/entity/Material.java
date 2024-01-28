@@ -12,10 +12,12 @@ public class Material {
     private double m_radius;
     private String m_length;
     private BigDecimal m_unitPrice;
-    public Material(int id, String name, Double radius, String length, double unitPrice)
+    private boolean m_isPipeType;
+    public Material(int id, String name, Double radius, String length, double unitPrice, boolean isPipeType)
     {
         this(name, radius, length, BigDecimal.valueOf(unitPrice));
         m_id = id;
+        m_isPipeType = isPipeType;
     }
     public Material(String name, double radius, String length, BigDecimal unitPrice)
     {
@@ -23,6 +25,7 @@ public class Material {
         setRadius(radius);
         setLength(length);
         setUnitPrice(unitPrice);
+        m_isPipeType = true;
     }
     public void setUnitPrice(BigDecimal value)
     {
@@ -78,6 +81,14 @@ public class Material {
     public BigDecimal calculateTotalSalePrice(int amount)
     {
         return calculateUnitSalePrice().multiply(BigDecimal.valueOf(amount));
+    }
+    public boolean getIsPipeType()
+    {
+        return m_isPipeType;
+    }
+    public void setIsPipeType(boolean isPipe)
+    {
+        m_isPipeType = isPipe;
     }
     @Override
     public String toString()

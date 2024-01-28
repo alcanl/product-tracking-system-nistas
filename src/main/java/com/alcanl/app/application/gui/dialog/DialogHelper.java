@@ -11,7 +11,8 @@ import javax.swing.*;
 import java.math.BigDecimal;
 
 public final class DialogHelper {
-    private DialogHelper() {}
+    private DialogHelper() {
+    }
     private static String getMaterialName(JTextField textFieldName)
     {
         var text = textFieldName.getText();

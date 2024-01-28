@@ -34,6 +34,10 @@ public class ApplicationService {
             throw new ServiceException(ex.getCause());
         }
     }
+    private List<Material> getTypedList(boolean isPipeType)
+    {
+        return materials.stream().filter(m -> m.getIsPipeType() == isPipeType).toList();
+    }
     public void setFormList(JList<SaleItem> list)
     {
         m_formList = list;
@@ -64,6 +68,14 @@ public class ApplicationService {
                     .filter(m -> radius - m.getRadius().getAsDouble() < Resources.DOUBLE_THRESHOLD
                     && radius - m.getRadius().getAsDouble() >= 0).toList();
     }
+    public List<Material> getPipeTypeMaterials()
+    {
+        return getTypedList(true);
+    }
+    public List<Material> getNonPipeTypeMaterials()
+    {
+        return getTypedList(false);
+    }
     public List<Material> getDataFromDB()
     {
         return materials;
@@ -91,12 +103,12 @@ public class ApplicationService {
     public void updateAllDataUnitPrices(double ratio)
     {
         try {
-            DBConnector.updateAllDataUnitPrices(ratio);
+            DBConnector.updateAllPipeTypeDataUnitPrices(ratio);
             reloadList();
-        } catch (RepositoryException ex) {
+
+        }catch (RepositoryException ex) {
             throw new ServiceException(ex.getCause());
         }
-
     }
     public void updateMaterialUnitPriceByRatio(Material material, double ratio)
     {

@@ -62,7 +62,7 @@ public class JListPrinter implements Printable {
     }
     private void drawHeader(Graphics2D g2d, PageFormat pf)
     {
-        ImageIcon icon = new ImageIcon(getResource("logo_print.jpg").getPath());
+        ImageIcon icon = new ImageIcon(getResource("logo_print2.jpg").getPath());
         g2d.drawImage(icon.getImage(), 20, 20, icon.getImageObserver());
         var now = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now());
         g2d.drawString(now, (int)pf.getImageableWidth() - 50, 50);

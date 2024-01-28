@@ -20,6 +20,7 @@ public class DialogAddNewMaterial extends JDialog {
     private JLabel labelRadius;
     private JLabel labelUnitPrice;
     private JPanel mainPanel;
+    private JCheckBox checkBoxIsPipeType;
     private final ApplicationService m_applicationService;
     public DialogAddNewMaterial(ApplicationService applicationService)
     {
@@ -55,6 +56,13 @@ public class DialogAddNewMaterial extends JDialog {
 
         if (material == null)
             return;
+
+
+        if (checkBoxIsPipeType.isSelected())
+            material.setIsPipeType(true);
+        else
+            material.setIsPipeType(false);
+
 
         DialogHelper.saveNewData(m_applicationService, material);
         dispose();

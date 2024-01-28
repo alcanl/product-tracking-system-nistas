@@ -29,8 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-
+@SuppressWarnings("ALL")
 public class MainForm extends JFrame {
     private JPanel jPanelMain;
     private JButton buttonSearchByName;
@@ -67,6 +66,8 @@ public class MainForm extends JFrame {
     private JButton buttonClearList;
     private JLabel labelTotalUnitPrice;
     private JButton buttonAddProductToBasket;
+    private JButton buttonPipe;
+    private JButton buttonNonPipe;
     private DefaultTableModel m_defaultTableModel;
     private ApplicationService m_applicationService;
     public static volatile boolean IS_LIST_CHANGE = false;
@@ -231,6 +232,8 @@ public class MainForm extends JFrame {
         buttonAddProductToBasket.addActionListener(e -> buttonAddProductToBasketClickedCallback());
         buttonUpdateSelectedData.addActionListener(e -> updateSelectedMaterialClickedCallback());
         buttonPrint.addActionListener(e -> buttonPrintClickedCallback());
+        buttonPipe.addActionListener(e -> buttonPipeClickedCallback());
+        buttonNonPipe.addActionListener(e -> buttonNonPipeClickedCallback());
         buttonClearList.addActionListener(e -> {m_applicationService.getSaleItemVector().clear();
             listSaleBasket.updateUI(); labelPrice.setText("0.00");});
         buttonUpdatePriceAllData.addActionListener(e -> {
@@ -247,6 +250,16 @@ public class MainForm extends JFrame {
         setBottomBarButtonTheme(panelBottomBar);
         setButtonCursors(jPanelMain);
 
+    }
+    private void buttonPipeClickedCallback()
+    {
+        initializeTableModel();
+        fillTable(m_applicationService.getPipeTypeMaterials());
+    }
+    private void buttonNonPipeClickedCallback()
+    {
+        initializeTableModel();
+        fillTable(m_applicationService.getNonPipeTypeMaterials());
     }
     private void buttonPrintClickedCallback()
     {
