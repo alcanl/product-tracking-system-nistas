@@ -11,7 +11,10 @@ public final class Resources {
     public static final double TAX = 0.2;
     public static final double PROFIT = 0.35;
     public static final String SELECT_ALL_DATA = "SELECT material_id, material_name, material_radius, material_length, material_unit_price, material_isPipeType FROM material_info";
-    public static final String DB_URL = "jdbc:sqlite::resource:materials.db";
+    public static String DB_URL = "jdbc:sqlite::resource:file:\\Users\\alica\\Documents\\Nistas\\db\\materials.db";
+    public static final String COPY_DB_URL = "alcanl\\Nistas\\db";
+    public static final String COPY_IMAGE_URL = "alcanl\\Nistas\\assets\\pic";
+    public static final String COPY_ASSETS_URL = "alcanl\\Nistas\\assets";
     public static final String COLUMN_ID = "material_id";
     public static final String COLUMN_NAME = "material_name";
     public static final String COLUMN_RADIUS = "material_radius";

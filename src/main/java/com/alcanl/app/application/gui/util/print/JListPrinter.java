@@ -1,24 +1,28 @@
 package com.alcanl.app.application.gui.util.print;
 
+import com.alcanl.app.global.PreLaunchBuilder;
 import com.alcanl.app.global.Resources;
 import com.alcanl.app.repository.entity.SaleItem;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.print.*;
+import java.io.File;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import static com.google.common.io.Resources.getResource;
 
 public class JListPrinter implements Printable {
     private final  ListModel<SaleItem> m_listModel;
     private final JLabel m_labelPrice;
+    private final File m_userDirectory;
 
     public JListPrinter(ListModel<SaleItem> listModel, JLabel labelPrice)
     {
         m_listModel = listModel;
         m_labelPrice = labelPrice;
+        m_userDirectory = new PreLaunchBuilder().m_userDirectory;
     }
     @Override
     public int print(Graphics g, PageFormat pf, int pageIndex) {
@@ -62,15 +66,18 @@ public class JListPrinter implements Printable {
     }
     private void drawHeader(Graphics2D g2d, PageFormat pf)
     {
-        ImageIcon icon = new ImageIcon(getResource("logo_print2.jpg").getPath());
-        g2d.drawImage(icon.getImage(), 20, 20, icon.getImageObserver());
-        var now = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now());
-        g2d.drawString(now, (int)pf.getImageableWidth() - 50, 50);
+        try {
+            var file = Files.readAllBytes(Path.of(m_userDirectory.getAbsolutePath(),"alcanl\\Nistas\\assets\\logo_print.png"));
+            var icon = new ImageIcon(file);
+            g2d.drawImage(icon.getImage(), 20, 20, icon.getImageObserver());
+            var now = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(LocalDate.now());
+            g2d.drawString(now, (int)pf.getImageableWidth() - 50, 50);
+        } catch (Exception ignore) {
 
+        }
     }
 
     private void drawImages(Graphics2D g2d, PageFormat pf) {
-
 
         int imageSpacing = 6;
         int startX = 20;
@@ -78,8 +85,8 @@ public class JListPrinter implements Printable {
 
         for (int i = 0; i < 10; i++) {
             try {
-                ImageIcon icon = new ImageIcon(getResource("pic" + (i + 1) + ".png").getPath());
-
+                var file = Files.readAllBytes(Path.of(m_userDirectory.getAbsolutePath(), "alcanl\\Nistas\\assets\\pic" + (i + 1) + ".png"));
+                ImageIcon icon = new ImageIcon(file);
                 g2d.drawImage(icon.getImage(), startX + (i * (50 + imageSpacing)), startY, icon.getImageObserver());
             } catch (Exception ex) {
                 Resources.showUnknownErrorMessageDialog(ex.getMessage());
